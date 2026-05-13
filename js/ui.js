@@ -548,19 +548,23 @@ const UI = {
     updateDashboard() {
         if (!Auth.currentUser) return;
         
-        document.getElementById('current-username').textContent = Auth.currentUser.username;
-        document.getElementById('coin-balance').textContent = Auth.currentUser.stats.bee_coins;
+        try {
+            document.getElementById('current-username').textContent = Auth.currentUser.username;
+            document.getElementById('coin-balance').textContent = Auth.currentUser.stats.bee_coins;
 
-        // Update progress percentages
-        const g3Prog = this.calculateBankProgress('G3');
-        const g5Prog = this.calculateBankProgress('G5');
-        document.getElementById('g3-progress').textContent = g3Prog;
-        document.getElementById('g5-progress').textContent = g5Prog;
+            // Update progress percentages
+            const g3Prog = this.calculateBankProgress('G3');
+            const g5Prog = this.calculateBankProgress('G5');
+            if (document.getElementById('g3-progress')) document.getElementById('g3-progress').textContent = g3Prog;
+            if (document.getElementById('g5-progress')) document.getElementById('g5-progress').textContent = g5Prog;
 
-        this.renderGalleryPreview();
-        this.renderRadarChart('G3', 'radarChartG3');
-        this.renderRadarChart('G5', 'radarChartG5');
-        this.renderAccuracyChart();
+            this.renderGalleryPreview();
+            this.renderRadarChart('G3', 'radarChartG3');
+            this.renderRadarChart('G5', 'radarChartG5');
+            this.renderAccuracyChart();
+        } catch (e) {
+            console.error("Dashboard update failed:", e);
+        }
     },
 
     renderRadarChart(bankName, canvasId) {
