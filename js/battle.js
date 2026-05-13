@@ -201,50 +201,92 @@ const BattleCenter = {
         await this.writeLog('>>> 警告：偵測到火箭隊特務接近！', logContainer);
         await new Promise(r => setTimeout(r, 800));
 
+        // Random Enemy
+        const enemies = [
+            { name: "瓦斯彈 (Koffing)", moves: ["污泥攻擊", "煙幕", "毒針", "自爆"] },
+            { name: "阿柏蛇 (Ekans)", moves: ["咬咬", "大蛇瞪眼", "毒針", "捆綁"] },
+            { name: "喵喵 (Meowth)", moves: ["聚寶功", "亂抓", "咬住", "擊掌奇襲"] },
+            { name: "雙彈瓦斯 (Weezing)", moves: ["污泥炸彈", "黑霧", "毒瓦斯", "撞擊"] },
+            { name: "阿柏怪 (Arbok)", moves: ["劇毒牙", "咬碎", "毒液衝擊", "瞪眼"] }
+        ];
+        const enemy = enemies[Math.floor(Math.random() * enemies.length)];
+        const myMoves = this.getMovesForPokemon(this.selectedPokemon);
+
         await this.writeLog(`\n[對戰開始] 你派出了寶可夢夥伴！`, logContainer);
-        await this.writeLog(`[對戰開始] 火箭隊派出了 瓦斯彈 (Koffing)！`, logContainer);
+        await this.writeLog(`[對戰開始] 火箭隊派出了 ${enemy.name}！`, logContainer);
         await new Promise(r => setTimeout(r, 500));
 
-        const myMoves = this.getMovesForPokemon(this.selectedPokemon);
-        const enemyMoves = [
-            { name: "污泥攻擊", msg: "噴射出惡臭的毒泥！" },
-            { name: "瞪眼", msg: "發出銳利的目光降低了防禦！" },
-            { name: "咬咬", msg: "用鋒利的牙齒狠狠咬住！" },
-            { name: "毒針", msg: "發射出帶毒的細針！" },
-            { name: "煙幕", msg: "噴出濃煙遮蔽了視線！" },
-            { name: "黑霧", msg: "散發出不詳的氣息抵消了能力變化！" }
-        ];
+        let myHP = 100;
+        let enemyHP = 100;
 
-        // 3-5 rounds of combat
-        const rounds = 4 + Math.floor(Math.random() * 3); // 4-6 rounds for more length
+        const renderHP = (hp, label) => {
+            const barSize = 10;
+            const filled = Math.ceil((hp / 100) * barSize);
+            const bar = '[' + '#'.repeat(Math.max(0, filled)) + '-'.repeat(Math.max(0, barSize - filled)) + ']';
+            return `${label} HP: ${bar} ${hp}/100`;
+        };
+
+        // 4-6 rounds of combat
+        const rounds = 4 + Math.floor(Math.random() * 3);
+        const winProbability = 0.5;
+        const willWin = Math.random() < winProbability;
+
         for (let i = 1; i <= rounds; i++) {
             await this.writeLog(`\n--- 第 ${i} 回合 ---`, logContainer);
+            await this.writeLog(renderHP(myHP, "你  "), logContainer, 'text-blue-400');
+            await this.writeLog(renderHP(enemyHP, "敵人"), logContainer, 'text-red-400');
+            await new Promise(r => setTimeout(r, 500));
+
+            // My Turn
             const myMove = myMoves[Math.floor(Math.random() * myMoves.length)];
             await this.writeLog(`> 你的寶可夢使用了「${myMove.name}」！`, logContainer);
-            await this.writeLog(`  ${myMove.msg}`, logContainer);
+            
+            // Calculate damage to keep flow
+            let damageToEnemy = 0;
+            if (i === rounds && willWin) {
+                damageToEnemy = enemyHP; // Finishing blow
+            } else {
+                damageToEnemy = 10 + Math.floor(Math.random() * 15);
+                if (enemyHP - damageToEnemy < 10 && !willWin) damageToEnemy = 0; // Don't kill if going to lose
+            }
+            enemyHP = Math.max(0, enemyHP - damageToEnemy);
+            await this.writeLog(`  ${myMove.msg} (造成了 ${damageToEnemy} 點傷害)`, logContainer);
+            
+            if (enemyHP <= 0) break;
+
             await new Promise(r => setTimeout(r, 800));
 
-            const enemyMove = enemyMoves[Math.floor(Math.random() * enemyMoves.length)];
-            await this.writeLog(`> 火箭隊的瓦斯彈使用了「${enemyMove.name}」！`, logContainer);
-            await this.writeLog(`  ${enemyMove.msg}`, logContainer);
+            // Enemy Turn
+            const enemyMoveName = enemy.moves[Math.floor(Math.random() * enemy.moves.length)];
+            await this.writeLog(`> 火箭隊的 ${enemy.name} 使用了「${enemyMoveName}」！`, logContainer);
+            
+            let damageToMe = 0;
+            if (i === rounds && !willWin) {
+                damageToMe = myHP; // Finishing blow
+            } else {
+                damageToMe = 10 + Math.floor(Math.random() * 15);
+                if (myHP - damageToMe < 10 && willWin) damageToMe = 0; // Don't kill if going to win
+            }
+            myHP = Math.max(0, myHP - damageToMe);
+            await this.writeLog(`  攻擊非常凌厲！ (受到了 ${damageToMe} 點傷害)`, logContainer);
+
+            if (myHP <= 0) break;
+            
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        await this.writeLog(`\n>>> 雙方體力都接近極限...`, logContainer);
-        await new Promise(r => setTimeout(r, 1500));
+        await this.writeLog(`\n>>> 戰鬥進入尾聲...`, logContainer);
+        await new Promise(r => setTimeout(r, 1000));
 
-        // 50% Win Rate
-        const won = Math.random() < 0.5;
-        
-        if (won) {
+        if (enemyHP <= 0) {
             const reward = Math.floor(bet * 1.5);
-            await this.writeLog(`\n[勝利] 你的寶可夢使出了最後一擊！`, logContainer);
-            await this.writeLog(`[勝利] 火箭隊狼狽地逃走了！`, logContainer);
+            await this.writeLog(`\n[勝利] 火箭隊的 ${enemy.name} 體力耗盡倒下了！`, logContainer, 'text-yellow-400 font-bold');
+            await this.writeLog(`[勝利] 火箭隊狼狽地逃走了！`, logContainer, 'text-yellow-400');
             await this.writeLog(`>>> 獲得獎金：${reward} Bee Coins！`, logContainer, 'text-yellow-400 font-bold');
             Auth.currentUser.stats.bee_coins += reward;
         } else {
-            await this.writeLog(`\n[失敗] 火箭隊的戰術太過狡猾...`, logContainer);
-            await this.writeLog(`[失敗] 你的寶可夢倒下了。`, logContainer);
+            await this.writeLog(`\n[失敗] 你的寶可夢夥伴已經精疲力竭...`, logContainer, 'text-red-400 font-bold');
+            await this.writeLog(`[失敗] 火箭隊發出了得意的笑聲！`, logContainer, 'text-red-400');
             await this.writeLog(`>>> 失去了下注的 ${bet} Bee Coins。`, logContainer, 'text-red-400');
         }
 
