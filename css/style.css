@@ -151,3 +151,23 @@
     border: 2px solid white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+/* Music Volume Slider Styling */
+#music-volume::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #FFC107;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+#music-volume::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #FFC107;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}

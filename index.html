@@ -44,6 +44,17 @@
             </svg>
             <h1 class="text-2xl font-fredoka tracking-wide">Spelling Bee</h1>
         </div>
+
+        <!-- Music Control -->
+        <div class="flex-1 flex justify-center md:justify-end md:mr-4">
+            <div class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full transition-all group border border-white/5">
+                <button id="music-toggle-btn" class="text-lg focus:outline-none transform hover:scale-110 transition active:scale-95" title="切換音樂">🎵</button>
+                <div class="w-0 overflow-hidden group-hover:w-20 md:group-hover:w-24 transition-all duration-300 flex items-center">
+                    <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" class="w-20 md:w-24 accent-bee-yellow cursor-pointer h-1.5 rounded-lg appearance-none bg-white/20">
+                </div>
+            </div>
+        </div>
+
         <div id="user-info" class="hidden flex items-center gap-2 md:gap-4">
             <div class="flex items-center bg-gradient-to-r from-bee-yellow to-honey text-bee-dark px-3 md:px-4 py-1.5 rounded-full font-extrabold shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),0_4px_10px_rgba(0,0,0,0.2)] border border-honey-dark/20">
                 <span class="mr-2 filter drop-shadow-md text-lg">🪙</span> <span id="coin-balance" class="mr-1">0</span><span class="hidden sm:inline">Bee Coins</span>
@@ -309,6 +320,7 @@
     </main>
 
     <!-- Audio elements -->
+    <audio id="bg-music" src="music/Cape_and_Compass.mp3" loop preload="auto"></audio>
     <audio id="sfx-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
     <audio id="sfx-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3" preload="auto"></audio>
     <audio id="sfx-unlock" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" preload="auto"></audio>
@@ -316,6 +328,7 @@
     <!-- Google Sheets Sync (GAS) -->
     <script src="js/gas-config.js"></script>
 
+    <script src="js/music.js"></script>
     <script src="js/words.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/speaker.js"></script>
