@@ -34,19 +34,25 @@
 
 /* Word Input Fields */
 .letter-input {
-    width: 3rem;
-    height: 4rem;
-    font-size: 2rem;
+    width: clamp(2rem, 8vw, 3rem);
+    height: clamp(3rem, 12vw, 4rem);
+    font-size: clamp(1.2rem, 5vw, 2rem);
     text-align: center;
     text-transform: lowercase;
-    border: 3px solid #FFE082;
-    border-radius: 12px;
+    border: 2px solid #FFE082;
+    border-radius: 10px;
     background: white;
     font-weight: bold;
     font-family: 'Inter', sans-serif;
     color: #212121;
     transition: all 0.2s;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+@media (min-width: 768px) {
+    .letter-input {
+        border-width: 3px;
+        border-radius: 12px;
+    }
 }
 .letter-input:focus {
     outline: none;
