@@ -45,15 +45,8 @@
             <h1 class="text-2xl font-fredoka tracking-wide">Spelling Bee</h1>
         </div>
 
-        <!-- Music Control -->
-        <div class="flex-1 flex justify-center md:justify-end md:mr-4">
-            <div class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full transition-all group border border-white/5">
-                <button id="music-toggle-btn" class="text-lg focus:outline-none transform hover:scale-110 transition active:scale-95" title="切換音樂">🎵</button>
-                <div class="w-0 overflow-hidden group-hover:w-20 md:group-hover:w-24 transition-all duration-300 flex items-center">
-                    <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" class="w-20 md:w-24 accent-bee-yellow cursor-pointer h-1.5 rounded-lg appearance-none bg-white/20">
-                </div>
-            </div>
-        </div>
+        <!-- Music Control Removed from Header -->
+
 
         <div id="user-info" class="hidden flex items-center gap-2 md:gap-4">
             <div class="flex items-center bg-gradient-to-r from-bee-yellow to-honey text-bee-dark px-3 md:px-4 py-1.5 rounded-full font-extrabold shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),0_4px_10px_rgba(0,0,0,0.2)] border border-honey-dark/20">
@@ -86,6 +79,21 @@
                         <label class="block text-sm font-bold text-gray-700 mb-1">通關密碼 (Password)</label>
                         <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-xl border-2 border-bee-yellow-light focus:border-honey focus:outline-none bg-white/80 transition" placeholder="輸入密碼">
                     </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">選擇挑戰題庫 (Question Bank)</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="relative flex flex-col items-center p-3 rounded-xl border-2 border-bee-yellow-light cursor-pointer hover:bg-amber-50 transition has-[:checked]:border-honey has-[:checked]:bg-amber-100 group">
+                                <input type="radio" name="auth-bank" value="G3" checked class="absolute opacity-0">
+                                <span class="text-2xl mb-1">🐣</span>
+                                <span class="font-bold text-bee-dark">G3 基礎</span>
+                            </label>
+                            <label class="relative flex flex-col items-center p-3 rounded-xl border-2 border-bee-yellow-light cursor-pointer hover:bg-amber-50 transition has-[:checked]:border-honey has-[:checked]:bg-amber-100 group">
+                                <input type="radio" name="auth-bank" value="G5" class="absolute opacity-0">
+                                <span class="text-2xl mb-1">🦅</span>
+                                <span class="font-bold text-bee-dark">G5 進階</span>
+                            </label>
+                        </div>
+                    </div>
                     <div id="auth-error" class="text-red-500 text-sm hidden font-semibold"></div>
                     <div class="flex gap-4">
                         <button type="submit" id="login-btn" class="flex-1 bg-bee-dark text-bee-yellow font-bold text-lg py-3 rounded-xl shadow-lg hover:bg-black transition transform active:scale-95">
@@ -106,66 +114,79 @@
                 <h2 class="text-2xl md:text-4xl font-fredoka text-bee-dark drop-shadow-md">選擇題庫開始挑戰！</h2>
             </div>
 
-            <!-- Word Bank Selection -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- G3 Bank -->
-                <button data-bank="G3" class="bank-btn relative overflow-hidden bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border-4 border-bee-yellow hover:border-honey transition group text-left">
-                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-bee-yellow opacity-20 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                    <h3 class="text-3xl font-fredoka mb-2">G3 Spelling Bee</h3>
-                    <p class="text-gray-600 font-semibold mb-4">基礎詞彙，適合初學小蜜蜂</p>
-                    <div class="flex justify-between items-center mt-auto">
-                        <span class="text-sm bg-bee-yellow/30 px-3 py-1 rounded-full font-bold">進度: <span id="g3-progress">0</span>%</span>
-                        <span class="text-2xl group-hover:translate-x-2 transition-transform">➡️</span>
-                    </div>
-                </button>
-                <!-- G5 Bank -->
-                <button data-bank="G5" class="bank-btn relative overflow-hidden bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border-4 border-bee-yellow hover:border-honey transition group text-left">
-                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-honey opacity-20 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                    <h3 class="text-3xl font-fredoka mb-2">G5 Spelling Bee</h3>
-                    <p class="text-gray-600 font-semibold mb-4">進階挑戰，包含同音字與長單字</p>
-                    <div class="flex justify-between items-center mt-auto">
-                        <span class="text-sm bg-honey/30 px-3 py-1 rounded-full font-bold">進度: <span id="g5-progress">0</span>%</span>
-                        <span class="text-2xl group-hover:translate-x-2 transition-transform">➡️</span>
-                    </div>
-                </button>
-            </div>
-
-            <!-- Art Gallery Preview & Stats -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
-                <!-- Gallery -->
-                <div class="lg:col-span-2 glass-panel rounded-3xl p-6 flex flex-col max-h-[700px]">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-2xl font-fredoka flex items-center gap-2">🐾 寶可夢圖鑑</h3>
-                    </div>
-                    <div id="gallery-preview" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 overflow-y-auto pb-4 custom-scrollbar pr-2">
-                        <!-- Populated by JS -->
-                    </div>
+            <!-- Top Section: Stats & Bank -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 1. Word Bank Selection -->
+                <div id="bank-selection-container" class="glass-panel rounded-3xl p-6 flex flex-col justify-center">
+                    <h3 class="text-2xl font-fredoka mb-4 flex items-center gap-2">🎯 目前挑戰</h3>
+                    <!-- G3 Bank -->
+                    <button id="bank-card-G3" data-bank="G3" class="bank-btn relative overflow-hidden bg-white/50 backdrop-blur-md rounded-2xl p-6 shadow-md border-2 border-bee-yellow hover:border-honey transition group text-left h-full">
+                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 bg-bee-yellow opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <h4 class="text-2xl font-fredoka mb-1">G3 Spelling Bee</h4>
+                        <p class="text-gray-500 text-sm mb-4">基礎詞彙練習</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-xs bg-bee-yellow/30 px-2 py-1 rounded-full font-bold">進度: <span id="g3-progress">0</span>%</span>
+                            <span class="text-xl group-hover:translate-x-1 transition-transform">➡️</span>
+                        </div>
+                    </button>
+                    <!-- G5 Bank -->
+                    <button id="bank-card-G5" data-bank="G5" class="bank-btn relative overflow-hidden bg-white/50 backdrop-blur-md rounded-2xl p-6 shadow-md border-2 border-bee-yellow hover:border-honey transition group text-left h-full">
+                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 bg-honey opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <h4 class="text-2xl font-fredoka mb-1">G5 Spelling Bee</h4>
+                        <p class="text-gray-500 text-sm mb-4">進階挑戰練習</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-xs bg-honey/30 px-2 py-1 rounded-full font-bold">進度: <span id="g5-progress">0</span>%</span>
+                            <span class="text-xl group-hover:translate-x-1 transition-transform">➡️</span>
+                        </div>
+                    </button>
                 </div>
 
-                <!-- Stats -->
-                <div class="glass-panel rounded-3xl p-6 flex flex-col gap-6">
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-2xl font-fredoka mb-2">📊 G3 精熟雷達圖</h3>
+                <!-- 2. Radar Chart -->
+                <div class="glass-panel rounded-3xl p-6 flex flex-col">
+                    <h3 class="text-2xl font-fredoka mb-4 flex items-center gap-2">📊 精熟程度</h3>
+                    <div class="flex-1 flex flex-col justify-center">
+                        <div id="radar-container-G3">
+                            <h4 class="text-sm font-bold text-gray-500 mb-2">G3 精熟雷達圖</h4>
                             <div class="h-64 w-full">
                                 <canvas id="radarChartG3"></canvas>
                             </div>
                         </div>
-                        <div>
-                            <h3 class="text-2xl font-fredoka mb-2">📊 G5 精熟雷達圖</h3>
+                        <div id="radar-container-G5">
+                            <h4 class="text-sm font-bold text-gray-500 mb-2">G5 精熟雷達圖</h4>
                             <div class="h-64 w-full">
                                 <canvas id="radarChartG5"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <h3 class="text-2xl font-fredoka mb-2">📈 易錯字排行榜</h3>
-                        <div class="h-48 w-full">
+                </div>
+
+                <!-- 3. Accuracy Chart -->
+                <div class="glass-panel rounded-3xl p-6 flex flex-col">
+                    <h3 class="text-2xl font-fredoka mb-4 flex items-center gap-2">📈 易錯詞彙</h3>
+                    <div class="flex-1 flex flex-col justify-center">
+                        <div class="h-64 w-full">
                             <canvas id="accuracyChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Bottom Section: Art Gallery -->
+            <div class="glass-panel rounded-3xl p-6 flex flex-col min-h-[400px]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-fredoka flex items-center gap-2">🐾 寶可夢圖鑑收藏</h3>
+                    <div class="flex items-center gap-3">
+                        <button id="open-battle-center-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:bg-red-600 transition flex items-center gap-2">
+                            <span>⚔️</span> 寶可夢對戰中心
+                        </button>
+                        <span class="hidden md:inline text-sm font-bold bg-bee-yellow/20 px-3 py-1 rounded-full text-bee-dark">完成挑戰賺取拼圖碎片！</span>
+                    </div>
+                </div>
+                <div id="gallery-preview" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 overflow-y-auto pb-4 custom-scrollbar pr-2">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
         </section>
         
         <!-- View 2.2: Level Selection (Specific Bank) -->
@@ -317,6 +338,69 @@
             </div>
         </div>
 
+        <!-- View 5: Pokemon Battle Center Modal -->
+        <div id="battle-center-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center z-[60] p-4 opacity-0 transition-opacity duration-300">
+            <div class="glass-panel max-w-3xl w-full p-8 rounded-3xl shadow-2xl flex flex-col relative transform scale-95 transition-transform duration-300 bg-gray-900 border-4 border-red-500/30">
+                <button id="close-battle-modal-btn" class="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl transition">&times;</button>
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-fredoka text-red-500 mb-2">⚔️ 寶可夢對戰中心 ⚔️</h2>
+                    <p class="text-gray-400 font-bold">使用你的傳奇寶可夢與火箭隊展開激鬥！</p>
+                    <p id="battle-daily-limit-text" class="text-bee-yellow text-sm mt-2 font-bold">今日剩餘次數: 3 / 3</p>
+                </div>
+
+                <div id="battle-setup-view" class="space-y-8">
+                    <!-- Pokemon Selection -->
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">選擇出戰的寶可夢:</h3>
+                        <div id="battle-pokemon-list" class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Betting -->
+                    <div class="bg-black/40 p-6 rounded-2xl border border-white/10">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">下注金額 (Bee Coins):</h3>
+                        <div class="flex items-center gap-6">
+                            <div class="flex-1 flex items-center gap-4 bg-white/5 p-4 rounded-xl">
+                                <span class="text-3xl">🪙</span>
+                                <input type="number" id="battle-bet-amount" value="100" step="100" min="100" class="bg-transparent text-white text-3xl font-bold w-full focus:outline-none outline-none border-b-2 border-red-500/50">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="document.getElementById('battle-bet-amount').stepUp()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-bold">+</button>
+                                <button onclick="document.getElementById('battle-bet-amount').stepDown()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-bold">-</button>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-sm mt-4 italic">※ 贏家可獲得 1.5 倍獎金！輸家則失去本金。</p>
+                    </div>
+
+                    <button id="start-battle-action-btn" class="w-full bg-red-600 text-white text-2xl font-bold py-5 rounded-2xl shadow-[0_0_30px_rgba(220,38,38,0.4)] hover:bg-red-500 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                        🔥 全力出擊！ 🔥
+                    </button>
+                </div>
+
+                <!-- Battle Console (DOS Style) -->
+                <div id="battle-console-view" class="hidden flex-1 flex flex-col bg-black border-2 border-green-500/50 rounded-xl overflow-hidden font-mono text-green-500 p-6 shadow-[inset_0_0_20px_rgba(34,197,94,0.2)]">
+                    <div class="flex justify-between border-b border-green-500/30 pb-2 mb-4 text-xs uppercase tracking-widest">
+                        <span>Terminal: v1.0.2-BATTLE</span>
+                        <span id="battle-timer">00:00:00</span>
+                    </div>
+                    <div id="battle-log-container" class="flex-1 overflow-y-auto custom-scrollbar text-sm md:text-base leading-relaxed">
+                        <!-- Battle logs appear here -->
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-green-500/30 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="animate-pulse">_</span>
+                            <span id="battle-status-msg" class="text-xs">系統轉播中...</span>
+                        </div>
+                        <button id="close-console-btn" class="hidden bg-green-900/50 hover:bg-green-800 text-green-400 px-6 py-2 rounded border border-green-500/30 text-sm transition">
+                            結束並離開終端機
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Audio elements -->
@@ -333,6 +417,7 @@
     <script src="js/auth.js"></script>
     <script src="js/speaker.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/battle.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
 </body>

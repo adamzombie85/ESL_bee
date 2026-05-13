@@ -108,10 +108,12 @@ const UI = {
 
         // Session Summary Buttons
         document.getElementById('summary-back-btn').addEventListener('click', () => {
+            Music.pause();
             this.showView('dashboard');
             this.updateDashboard();
         });
         document.getElementById('summary-continue-btn').addEventListener('click', () => {
+            Music.pause();
             this.showLevelSelect(Game.currentBank);
         });
 
@@ -122,6 +124,9 @@ const UI = {
         document.getElementById('modal-close-btn').addEventListener('click', () => {
             this.hideGalleryDetail();
         });
+
+        // Battle Center
+        BattleCenter.init();
     },
 
     populateVoices() {
@@ -435,6 +440,9 @@ const UI = {
         } else {
             msg.textContent = `挑戰成功！獲得一塊新拼圖！(${pieces}/4)`;
         }
+
+        // Play music on success screen
+        Music.play();
     },
 
     showGalleryDetail(pokemonImg) {
@@ -570,6 +578,7 @@ const UI = {
         
         try {
             const stats = Auth.currentUser.stats || { bee_coins: 0, word_mastery: {}, pokemon_inventory: {} };
+            const selectedBank = Auth.currentUser.selectedBank || 'G3';
             
             if (document.getElementById('current-username')) {
                 document.getElementById('current-username').textContent = Auth.currentUser.username;
@@ -586,9 +595,21 @@ const UI = {
                 if (document.getElementById('g5-progress')) document.getElementById('g5-progress').textContent = g5Prog;
             } catch (e) { console.error("Progress calc failed:", e); }
 
+            // Filter bank cards and radar charts based on selection
+            ['G3', 'G5'].forEach(bank => {
+                const card = document.getElementById(`bank-card-${bank}`);
+                const radar = document.getElementById(`radar-container-${bank}`);
+                if (bank === selectedBank) {
+                    if (card) card.classList.remove('hidden');
+                    if (radar) radar.classList.remove('hidden');
+                } else {
+                    if (card) card.classList.add('hidden');
+                    if (radar) radar.classList.add('hidden');
+                }
+            });
+
             try { UI.renderGalleryPreview(); } catch (e) { console.error("Gallery render failed:", e); }
-            try { UI.renderRadarChart('G3', 'radarChartG3'); } catch (e) { console.error("G3 Radar failed:", e); }
-            try { UI.renderRadarChart('G5', 'radarChartG5'); } catch (e) { console.error("G5 Radar failed:", e); }
+            try { UI.renderRadarChart(selectedBank, `radarChart${selectedBank}`); } catch (e) { console.error(`${selectedBank} Radar failed:`, e); }
             try { UI.renderAccuracyChart(); } catch (e) { console.error("Accuracy chart failed:", e); }
             
         } catch (e) {

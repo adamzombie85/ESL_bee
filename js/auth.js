@@ -61,6 +61,7 @@ const Auth = {
     async login() {
         const usernameInput = document.getElementById('auth-username').value.trim();
         const passwordInput = document.getElementById('auth-password').value.trim();
+        const bankInput = document.querySelector('input[name="auth-bank"]:checked').value;
         const errorEl = document.getElementById('auth-error');
         const loginBtn = document.getElementById('login-btn');
 
@@ -90,6 +91,7 @@ const Auth = {
                 this.currentUser = {
                     username: usernameInput,
                     password: passwordInput,
+                    selectedBank: bankInput,
                     stats: result.data
                 };
                 this.saveSession();
@@ -102,7 +104,7 @@ const Auth = {
         } catch (error) {
             console.error("GAS login error:", error);
             // Fallback to local
-            this.handleLocalLogin(usernameInput, passwordInput, errorEl);
+            this.handleLocalLogin(usernameInput, passwordInput, bankInput, errorEl);
         } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = originalText;
@@ -112,6 +114,7 @@ const Auth = {
     async register() {
         const usernameInput = document.getElementById('auth-username').value.trim();
         const passwordInput = document.getElementById('auth-password').value.trim();
+        const bankInput = document.querySelector('input[name="auth-bank"]:checked').value;
         const errorEl = document.getElementById('auth-error');
         const regBtn = document.getElementById('register-btn');
 
@@ -134,7 +137,8 @@ const Auth = {
             unlocked_levels: { G3: [3], G5: [5] },
             g3_progress: {},
             g5_progress: {},
-            word_mastery: {}
+            word_mastery: {},
+            battle_stats: { daily_count: 0, last_date: "" }
         };
 
         if (localUsers[usernameInput]) {
@@ -183,6 +187,7 @@ const Auth = {
                 this.currentUser = {
                     username: usernameInput,
                     password: passwordInput,
+                    selectedBank: bankInput,
                     stats: result.data
                 };
                 this.saveSession();
@@ -203,11 +208,12 @@ const Auth = {
         }
     },
 
-    handleLocalLogin(username, password, errorEl) {
+    handleLocalLogin(username, password, bank, errorEl) {
         let users = JSON.parse(localStorage.getItem('bee_users') || '{}');
         if (users[username]) {
             if (users[username].password === password) {
                 this.currentUser = users[username];
+                this.currentUser.selectedBank = bank; // Apply selection
                 this.saveSession();
                 UI.showView('dashboard');
                 UI.updateDashboard();
@@ -219,6 +225,7 @@ const Auth = {
             const newUser = {
                 username: username,
                 password: password,
+                selectedBank: bank,
                 stats: {
                     bee_coins: 0,
                     inventory: [],
@@ -226,7 +233,8 @@ const Auth = {
                     unlocked_levels: { G3: [3], G5: [5] },
                     g3_progress: {},
                     g5_progress: {},
-                    word_mastery: {}
+                    word_mastery: {},
+                    battle_stats: { daily_count: 0, last_date: "" }
                 }
             };
             users[username] = newUser;
