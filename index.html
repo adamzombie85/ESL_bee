@@ -258,8 +258,8 @@
                 <h2 class="text-4xl font-fredoka text-bee-dark mb-2">挑戰完成！</h2>
                 <p id="summary-msg" class="text-gray-600 font-bold mb-8">你表現得太棒了！獲得了一塊寶可夢碎片！</p>
                 
-                <!-- Piece Preview -->
-                <div id="earned-piece-preview" class="w-48 h-48 mb-8 relative border-4 border-bee-yellow rounded-2xl overflow-hidden shadow-lg bg-white">
+                <!-- Piece Preview (Puzzle Grid) -->
+                <div id="earned-piece-preview" class="w-48 h-48 mb-8 grid grid-cols-2 grid-rows-2 gap-1 border-4 border-bee-yellow rounded-2xl overflow-hidden shadow-lg bg-gray-200">
                     <!-- Shown via JS -->
                 </div>
 
@@ -268,41 +268,28 @@
                         🏠 回到首頁
                     </button>
                     <button id="summary-continue-btn" class="flex-1 bg-honey text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:bg-honey-dark transition transform active:scale-95 text-lg">
-                        🚀 繼續挑戰題目
+                        🚀 繼續挑戰
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- View 4: Pokemon Gallery Modal (Deprecated but kept hidden) -->
-        <div id="art-shop-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
-            <div class="bg-[#fcfaf2] w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
-                <div class="bg-bee-dark text-bee-yellow p-4 flex justify-between items-center">
-                    <h2 class="text-2xl font-fredoka">🐾 寶可夢圖鑑</h2>
-                    <div class="flex gap-4 items-center">
-                        <button id="close-shop-btn" class="text-white hover:text-red-400 font-bold text-xl px-2">&times;</button>
-                    </div>
+        <!-- View 4: Pokemon Gallery Detail Modal -->
+        <div id="view-gallery-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+            <div class="glass-panel max-w-2xl w-full p-8 rounded-3xl shadow-2xl flex flex-col items-center relative transform scale-95 transition-transform duration-300">
+                <button id="close-gallery-modal-btn" class="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl transition">&times;</button>
+                
+                <h2 id="modal-pokemon-name" class="text-3xl font-fredoka text-bee-yellow mb-6">寶可夢收集進度</h2>
+                
+                <div id="modal-puzzle-container" class="w-full aspect-square max-w-[400px] grid grid-cols-2 grid-rows-2 gap-2 bg-gray-300/30 rounded-2xl overflow-hidden border-8 border-bee-yellow shadow-2xl">
+                    <!-- Populated by JS -->
                 </div>
                 
-                <div class="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-8">
-                    <!-- Pokemon Selection List -->
-                    <div class="w-full lg:w-1/3 space-y-4" id="art-list">
-                        <!-- Populated by JS -->
-                    </div>
-
-                    <!-- Main Canvas Area -->
-                    <div class="flex-1 flex flex-col items-center justify-center bg-gray-100 rounded-2xl p-6 shadow-inner relative border-[8px] border-bee-yellow">
-                        <h3 id="current-art-title" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-bold shadow-md z-10 text-bee-dark">Pokemon</h3>
-                        
-                        <div id="art-canvas" class="relative bg-white shadow-xl max-w-full max-h-full aspect-square w-full sm:w-[400px]">
-                            <!-- CSS Grid slices will be appended here (2x2) -->
-                        </div>
-
-                        <div class="absolute bottom-4 right-4 bg-white/90 p-4 rounded-2xl shadow-lg text-center backdrop-blur-sm">
-                            <p class="text-sm font-bold text-gray-600" id="collection-status-text">收集進度: 0 / 4</p>
-                        </div>
-                    </div>
-                </div>
+                <p id="modal-pokemon-status" class="mt-6 text-xl font-bold text-white">收集進度: 0 / 4</p>
+                
+                <button id="modal-close-btn" class="mt-8 bg-bee-yellow text-bee-dark px-10 py-3 rounded-xl font-bold hover:bg-honey transition transform active:scale-95">
+                    關閉欣賞
+                </button>
             </div>
         </div>
 

@@ -114,6 +114,14 @@ const UI = {
         document.getElementById('summary-continue-btn').addEventListener('click', () => {
             this.showLevelSelect(Game.currentBank);
         });
+
+        // Gallery Modal Buttons
+        document.getElementById('close-gallery-modal-btn').addEventListener('click', () => {
+            this.hideGalleryDetail();
+        });
+        document.getElementById('modal-close-btn').addEventListener('click', () => {
+            this.hideGalleryDetail();
+        });
     },
 
     populateVoices() {
@@ -393,24 +401,77 @@ const UI = {
         this.showView('view-session-summary');
         
         const preview = document.getElementById('earned-piece-preview');
-        // Clear styles and content
         preview.innerHTML = '';
-        preview.style.backgroundColor = 'white';
-        preview.style.backgroundImage = `url('pokemons/${pokemonImg}')`;
-        preview.style.backgroundSize = 'contain';
-        preview.style.backgroundRepeat = 'no-repeat';
-        preview.style.backgroundPosition = 'center';
-        preview.style.filter = 'none'; // Ensure no silhouette filter remains
+        preview.className = "w-48 h-48 mb-8 grid grid-cols-2 grid-rows-2 gap-1 border-4 border-bee-yellow rounded-2xl overflow-hidden shadow-lg bg-gray-200";
 
         const inventory = Auth.currentUser.stats.pokemon_inventory || {};
         const pieces = inventory[pokemonImg] || 0;
-        const msg = document.getElementById('summary-msg');
         
+        // Render 2x2 grid
+        const pos = ['0% 0%', '100% 0%', '0% 100%', '100% 100%'];
+        for(let i=0; i<4; i++) {
+            const div = document.createElement('div');
+            div.style.backgroundImage = `url('pokemons/${pokemonImg}')`;
+            div.style.backgroundSize = '200% 200%';
+            div.style.backgroundPosition = pos[i];
+            
+            if (i < pieces) {
+                div.className = "w-full h-full";
+                // Animation for the NEWEST piece
+                if (i === pieces - 1) {
+                    div.classList.add('animate-bounce');
+                    div.style.zIndex = "10";
+                }
+            } else {
+                div.className = "w-full h-full opacity-30 grayscale";
+                div.style.filter = 'brightness(0) invert(0.7)';
+            }
+            preview.appendChild(div);
+        }
+
+        const msg = document.getElementById('summary-msg');
         if (pieces === 4) {
             msg.textContent = "太厲害了！你已經完整收集了這隻寶可夢！";
         } else {
-            msg.textContent = `挑戰成功！獲得了一塊碎片 (目前: ${pieces}/4)`;
+            msg.textContent = `挑戰成功！獲得一塊新拼圖！(${pieces}/4)`;
         }
+    },
+
+    showGalleryDetail(pokemonImg) {
+        const modal = document.getElementById('view-gallery-modal');
+        const container = document.getElementById('modal-puzzle-container');
+        const status = document.getElementById('modal-pokemon-status');
+        
+        container.innerHTML = '';
+        const inventory = Auth.currentUser.stats.pokemon_inventory || {};
+        const pieces = inventory[pokemonImg] || 0;
+
+        const pos = ['0% 0%', '100% 0%', '0% 100%', '100% 100%'];
+        for(let i=0; i<4; i++) {
+            const div = document.createElement('div');
+            div.style.backgroundImage = `url('pokemons/${pokemonImg}')`;
+            div.style.backgroundSize = '200% 200%';
+            div.style.backgroundPosition = pos[i];
+            
+            if (i < pieces) {
+                div.className = "w-full h-full";
+            } else {
+                div.className = "w-full h-full opacity-30 grayscale";
+                div.style.filter = 'brightness(0) invert(0.7)';
+            }
+            container.appendChild(div);
+        }
+
+        status.textContent = pieces === 4 ? "✨ 已完全收集完成！ ✨" : `目前收集進度: ${pieces} / 4`;
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    },
+
+    hideGalleryDetail() {
+        const modal = document.getElementById('view-gallery-modal');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
     },
 
     updateLevelStats() {
@@ -604,6 +665,10 @@ const UI = {
             p.className = 'text-xs font-bold mt-1 text-gray-500';
             p.textContent = isFull ? '完成' : `${pieces}/4`;
             div.appendChild(p);
+
+            div.addEventListener('click', () => {
+                this.showGalleryDetail(img);
+            });
 
             container.appendChild(div);
         });
