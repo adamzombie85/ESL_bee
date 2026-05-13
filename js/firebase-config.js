@@ -1,14 +1,15 @@
 // firebase-config.js
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY", // 請填入您的 API Key
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    apiKey: "AIzaSyAAHbfwLcqeXEk32Oc7q9kUFf9rLCn5I6c",
+    authDomain: "pingkipquiz.firebaseapp.com",
+    projectId: "pingkipquiz",
+    storageBucket: "pingkipquiz.firebasestorage.app",
     messagingSenderId: "838722993256",
-    appId: "1:838722993256:web:8ff2dfe06c37fdc6248fdd"
+    appId: "1:838722993256:web:8ff2dfe06c37fdc6248fdd",
+    measurementId: "G-K6M8PC6951",
+    databaseURL: "https://pingkipquiz-default-rtdb.firebaseio.com"
 };
 
-// Initialize Firebase
+// Initialize Firebase using compat SDK
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
