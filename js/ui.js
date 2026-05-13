@@ -549,8 +549,14 @@ const UI = {
         if (!Auth.currentUser) return;
         
         try {
-            document.getElementById('current-username').textContent = Auth.currentUser.username;
-            document.getElementById('coin-balance').textContent = Auth.currentUser.stats.bee_coins;
+            const stats = Auth.currentUser.stats || { bee_coins: 0, word_mastery: {}, pokemon_inventory: {} };
+            
+            if (document.getElementById('current-username')) {
+                document.getElementById('current-username').textContent = Auth.currentUser.username;
+            }
+            if (document.getElementById('coin-balance')) {
+                document.getElementById('coin-balance').textContent = stats.bee_coins || 0;
+            }
 
             // Update progress percentages
             const g3Prog = this.calculateBankProgress('G3');
@@ -653,9 +659,16 @@ const UI = {
     // --- Pokemon Gallery ---
     renderGalleryPreview() {
         const container = document.getElementById('gallery-preview');
+        if (!container) return;
         container.innerHTML = '';
         
-        const inventory = Auth.currentUser.stats.pokemon_inventory || {};
+        const stats = Auth.currentUser?.stats || {};
+        const inventory = stats.pokemon_inventory || {};
+
+        if (!POKEMON_IMAGES || POKEMON_IMAGES.length === 0) {
+            container.innerHTML = '<p class="text-gray-400">目前沒有寶可夢圖鑑資料</p>';
+            return;
+        }
 
         POKEMON_IMAGES.forEach(img => {
             const pieces = inventory[img] || 0;
