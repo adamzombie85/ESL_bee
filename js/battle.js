@@ -211,8 +211,9 @@ const BattleCenter = {
         ];
         const enemy = enemies[Math.floor(Math.random() * enemies.length)];
         const myMoves = this.getMovesForPokemon(this.selectedPokemon);
+        const myName = POKEMON_NAMES[this.selectedPokemon] || '你的寶可夢';
 
-        await this.writeLog(`\n[對戰開始] 你派出了寶可夢夥伴！`, logContainer);
+        await this.writeLog(`\n[對戰開始] 你派出了 ${myName}！`, logContainer);
         await this.writeLog(`[對戰開始] 火箭隊派出了 ${enemy.name}！`, logContainer);
         await new Promise(r => setTimeout(r, 500));
 
@@ -239,7 +240,7 @@ const BattleCenter = {
 
             // My Turn
             const myMove = myMoves[Math.floor(Math.random() * myMoves.length)];
-            await this.writeLog(`> 你的寶可夢使用了「${myMove.name}」！`, logContainer);
+            await this.writeLog(`> ${myName} 使用了「${myMove.name}」！`, logContainer);
             
             // Calculate damage to keep flow
             let damageToEnemy = 0;
@@ -281,11 +282,11 @@ const BattleCenter = {
         if (enemyHP <= 0) {
             const reward = Math.floor(bet * 1.5);
             await this.writeLog(`\n[勝利] 火箭隊的 ${enemy.name} 體力耗盡倒下了！`, logContainer, 'text-yellow-400 font-bold');
-            await this.writeLog(`[勝利] 火箭隊狼狽地逃走了！`, logContainer, 'text-yellow-400');
+            await this.writeLog(`[勝利] ${myName} 獲得了壓倒性的勝利！`, logContainer, 'text-yellow-400');
             await this.writeLog(`>>> 獲得獎金：${reward} Bee Coins！`, logContainer, 'text-yellow-400 font-bold');
             Auth.currentUser.stats.bee_coins += reward;
         } else {
-            await this.writeLog(`\n[失敗] 你的寶可夢夥伴已經精疲力竭...`, logContainer, 'text-red-400 font-bold');
+            await this.writeLog(`\n[失敗] ${myName} 已經精疲力竭...`, logContainer, 'text-red-400 font-bold');
             await this.writeLog(`[失敗] 火箭隊發出了得意的笑聲！`, logContainer, 'text-red-400');
             await this.writeLog(`>>> 失去了下注的 ${bet} Bee Coins。`, logContainer, 'text-red-400');
         }

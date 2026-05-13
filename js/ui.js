@@ -2,6 +2,7 @@
 
 const POKEMON_IMAGES = [
     "05fd4676fa4a4b58288510a97a5211e066e02464.png",
+    "072285cb2f79f560e25fce81cc981a7432fa0123.png",
     "0783062d0d860b8ae7d8e859241a700359c4d981.png",
     "1086bb30451998c2911e948c5be7148b57c38d15.png",
     "1583b45023aabc829f405629e4b0d7259f80a2c0.png",
@@ -9,15 +10,20 @@ const POKEMON_IMAGES = [
     "2050f1fd1283f473d7d048f8631712e7e003f802.png",
     "266278a59d39e9770b8f34c9a635243133334a28.png",
     "2a2e293a8524ac94136bada7346ddfe57e12e47e.png",
+    "33b32e8a93e55cbb39d07fa08f6bf183013572bc.png",
     "3862fc122debc9675749142a7c76f1a64dbbc60d.png",
+    "39aa457757bc80212c28bc0b9cc21445756f0359.png",
+    "3d1e9d886ba47475ac9df961a040ed2dbe56f217.png",
     "47ae88a63c66e32e957da303ad50b72268e097e4.png",
     "4fb01f5dee192aa16343fdf2d928cd80fea91c2b.png",
+    "5da8f512523759232f743f19421d15ae31ada198.png",
     "60a46a9d79191bbcc037a369c61faa5eed1a8827.png",
     "8708c18964fa2bf675990c90863e5d40164e22a3.png",
     "89719dbcbddd11a1e6bc5f4366e00910a04eaf9f.png",
     "98126582af9f41623f2dde46b3b002ac9dbd1943.png",
     "ad7ffb53f984a6623c53f01cfbc06fc8565ecbd4.png",
     "b57f557201bb4eb545e82c509137036f9e5751ee.png",
+    "b8bcfb490b9a54a7cfc607ac82f413f4e582cb56.png",
     "c65cff51b864d3b37e24832af94c320824e2021d.png",
     "d00d72f082b7dae546fa8bd5cf09fcfe53ffcae8.png",
     "d1b4b9ec796de5d101e85258987036767c37a34b.png",
@@ -25,8 +31,44 @@ const POKEMON_IMAGES = [
     "e12ce48ab99b2df6fbbc1e97038c4f6e192d09d7.png",
     "e724713a13271ef531f5410da782e24f729cb6d6.png",
     "eda09f7ae6a3f5c71eeb1613b2da7b769cf12ae6.png",
-    "f792fb3e98937419d426f9d8de19b8f1eebc7454.png"
+    "f792fb3e98937419d426f9d8de19b8f1eebc7454.png",
+    "fea142043a53539815b5a08756a010348931350a.png"
 ];
+
+const POKEMON_NAMES = {
+    "05fd4676fa4a4b58288510a97a5211e066e02464.png": "鐵甲蛹",
+    "072285cb2f79f560e25fce81cc981a7432fa0123.png": "三首惡龍",
+    "0783062d0d860b8ae7d8e859241a700359c4d981.png": "可達鴨",
+    "1086bb30451998c2911e948c5be7148b57c38d15.png": "巨石丁",
+    "1583b45023aabc829f405629e4b0d7259f80a2c0.png": "拉普拉斯",
+    "163c4755d05b84456e75c3f7ff14a5d80559a96d.png": "霜奶仙",
+    "2050f1fd1283f473d7d048f8631712e7e003f802.png": "噴火龍",
+    "266278a59d39e9770b8f34c9a635243133334a28.png": "金魚王",
+    "2a2e293a8524ac94136bada7346ddfe57e12e47e.png": "白海獅",
+    "33b32e8a93e55cbb39d07fa08f6bf183013572bc.png": "水躍魚",
+    "3862fc122debc9675749142a7c76f1a64dbbc60d.png": "呆殼獸(伽勒爾)",
+    "39aa457757bc80212c28bc0b9cc21445756f0359.png": "怪顎龍",
+    "3d1e9d886ba47475ac9df961a040ed2dbe56f217.png": "仆斬將軍",
+    "47ae88a63c66e32e957da303ad50b72268e097e4.png": "喇叭芽",
+    "4fb01f5dee192aa16343fdf2d928cd80fea91c2b.png": "多麗米亞",
+    "5da8f512523759232f743f19421d15ae31ada198.png": "烈腿蝗",
+    "60a46a9d79191bbcc037a369c61faa5eed1a8827.png": "土王",
+    "8708c18964fa2bf675990c90863e5d40164e22a3.png": "霜奶仙(超極巨)",
+    "89719dbcbddd11a1e6bc5f4366e00910a04eaf9f.png": "六尾(阿羅拉)",
+    "98126582af9f41623f2dde46b3b002ac9dbd1943.png": "火爆獸",
+    "ad7ffb53f984a6623c53f01cfbc06fc8565ecbd4.png": "超夢",
+    "b57f557201bb4eb545e82c509137036f9e5751ee.png": "暴鯉龍",
+    "b8bcfb490b9a54a7cfc607ac82f413f4e582cb56.png": "耿鬼",
+    "c65cff51b864d3b37e24832af94c320824e2021d.png": "喵喵",
+    "d00d72f082b7dae546fa8bd5cf09fcfe53ffcae8.png": "伊布",
+    "d1b4b9ec796de5d101e85258987036767c37a34b.png": "快龍",
+    "dacab2be1777c14ed7da12824dd85c2cdbd2ebf9.png": "路卡利歐", // Guessed or checked
+    "e12ce48ab99b2df6fbbc1e97038c4f6e192d09d7.png": "夢幻",
+    "e724713a13271ef531f5410da782e24f729cb6d6.png": "洛奇亞",
+    "eda09f7ae6a3f5c71eeb1613b2da7b769cf12ae6.png": "鳳王",
+    "f792fb3e98937419d426f9d8de19b8f1eebc7454.png": "烈空坐",
+    "fea142043a53539815b5a08756a010348931350a.png": "固拉多"
+};
 
 const UI = {
     chartInstance: null,
@@ -742,8 +784,13 @@ const UI = {
 
             div.appendChild(previewCanvas);
             
+            const nameP = document.createElement('p');
+            nameP.className = 'text-sm font-bold mt-2 text-white';
+            nameP.textContent = POKEMON_NAMES[img] || '未知寶可夢';
+            div.appendChild(nameP);
+
             const p = document.createElement('p');
-            p.className = 'text-xs font-bold mt-1 text-gray-500';
+            p.className = 'text-[10px] font-bold text-gray-500';
             p.textContent = isFull ? '完成' : `${pieces}/4`;
             div.appendChild(p);
 
@@ -803,8 +850,9 @@ const UI = {
     },
 
     renderCanvas(imgFilename, unlockedPieces) {
-        document.getElementById('current-art-title').textContent = '目標寶可夢';
-        document.getElementById('collection-status-text').textContent = `收集進度: ${unlockedPieces} / 4`;
+        document.getElementById('gallery-detail-img').src = `pokemons/${imgFilename}`;
+        document.getElementById('gallery-detail-name').textContent = POKEMON_NAMES[imgFilename] || '未知寶可夢';
+        document.getElementById('gallery-detail-pieces').textContent = `收集進度: ${unlockedPieces} / 4`;
         
         const canvas = document.getElementById('art-canvas');
         canvas.innerHTML = '';
