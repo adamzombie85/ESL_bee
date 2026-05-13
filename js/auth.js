@@ -9,20 +9,17 @@ const Auth = {
             e.preventDefault();
             this.login();
         });
+        
+        const regBtn = document.getElementById('register-btn');
+        if (regBtn) {
+            regBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.register();
+            });
+        }
+
         document.getElementById('logout-btn').addEventListener('click', () => {
             this.logout();
-        });
-        document.getElementById('sync-cloud-btn').addEventListener('click', async () => {
-            const btn = document.getElementById('sync-cloud-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⌛ 同步中...';
-            btn.disabled = true;
-            await this.saveProgress(true);
-            setTimeout(() => {
-                btn.innerHTML = '✅ 已完成';
-                btn.disabled = false;
-                setTimeout(() => btn.innerHTML = originalText, 2000);
-            }, 500);
         });
     },
 
@@ -32,8 +29,32 @@ const Auth = {
             this.currentUser = JSON.parse(savedUser);
             UI.showView('dashboard');
             UI.updateDashboard();
+            // Background sync latest from cloud
+            this.syncFromCloud();
         } else {
             UI.showView('auth');
+        }
+    },
+
+    async syncFromCloud() {
+        if (!this.currentUser || !GAS_WEB_APP_URL) return;
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'login',
+                    username: this.currentUser.username,
+                    password: this.currentUser.password
+                })
+            });
+            const result = await response.json();
+            if (result.success) {
+                this.currentUser.stats = result.data;
+                this.saveSession();
+                UI.updateDashboard();
+            }
+        } catch (e) {
+            console.warn("Cloud sync failed, staying in local mode.");
         }
     },
 
@@ -41,7 +62,7 @@ const Auth = {
         const usernameInput = document.getElementById('auth-username').value.trim();
         const passwordInput = document.getElementById('auth-password').value.trim();
         const errorEl = document.getElementById('auth-error');
-        const loginBtn = document.querySelector('#auth-form button');
+        const loginBtn = document.getElementById('login-btn');
 
         if (!usernameInput || !passwordInput) {
             errorEl.textContent = '請輸入代號與密碼！';
@@ -49,15 +70,9 @@ const Auth = {
             return;
         }
 
-        if (GAS_WEB_APP_URL === "YOUR_GAS_WEB_APP_URL_HERE") {
-            errorEl.textContent = '請先在 gas-config.js 中設定 GAS 網址！';
-            errorEl.classList.remove('hidden');
-            return;
-        }
-
-        // Show loading state
         loginBtn.disabled = true;
-        loginBtn.textContent = '正在連線試算表...';
+        const originalText = loginBtn.textContent;
+        loginBtn.textContent = '連線中...';
         errorEl.classList.add('hidden');
 
         try {
@@ -66,16 +81,7 @@ const Auth = {
                 body: JSON.stringify({
                     action: 'login',
                     username: usernameInput,
-                    password: passwordInput,
-                    data: {
-                        bee_coins: 0,
-                        inventory: [],
-                        pokemon_inventory: {},
-                        unlocked_levels: { G3: [3], G5: [5] },
-                        g3_progress: {},
-                        g5_progress: {},
-                        word_mastery: {}
-                    }
+                    password: passwordInput
                 })
             });
             const result = await response.json();
@@ -99,7 +105,76 @@ const Auth = {
             this.handleLocalLogin(usernameInput, passwordInput, errorEl);
         } finally {
             loginBtn.disabled = false;
-            loginBtn.textContent = '進入蜂巢 🍯';
+            loginBtn.textContent = originalText;
+        }
+    },
+
+    async register() {
+        const usernameInput = document.getElementById('auth-username').value.trim();
+        const passwordInput = document.getElementById('auth-password').value.trim();
+        const errorEl = document.getElementById('auth-error');
+        const regBtn = document.getElementById('register-btn');
+
+        if (!usernameInput || !passwordInput) {
+            errorEl.textContent = '請輸入代號與密碼！';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        regBtn.disabled = true;
+        regBtn.textContent = '註冊中...';
+        errorEl.classList.add('hidden');
+
+        // Check if we have local data for THIS user in 'bee_users'
+        let localUsers = JSON.parse(localStorage.getItem('bee_users') || '{}');
+        let initialStats = {
+            bee_coins: 0,
+            inventory: [],
+            pokemon_inventory: {},
+            unlocked_levels: { G3: [3], G5: [5] },
+            g3_progress: {},
+            g5_progress: {},
+            word_mastery: {}
+        };
+
+        if (localUsers[usernameInput]) {
+            initialStats = localUsers[usernameInput].stats;
+            console.log("Found local data for registration migration.");
+        }
+
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'login', // GAS logic: login with new user = register
+                    username: usernameInput,
+                    password: passwordInput,
+                    data: initialStats
+                })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                this.currentUser = {
+                    username: usernameInput,
+                    password: passwordInput,
+                    stats: result.data
+                };
+                this.saveSession();
+                UI.showView('dashboard');
+                UI.updateDashboard();
+                alert("恭喜！註冊成功，本機進度已同步至雲端試算表。");
+            } else {
+                errorEl.textContent = result.message || '註冊失敗';
+                errorEl.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("GAS register error:", error);
+            errorEl.textContent = '連線失敗，請檢查網頁應用程式部署設定。';
+            errorEl.classList.remove('hidden');
+        } finally {
+            regBtn.disabled = false;
+            regBtn.textContent = '註冊 ✨';
         }
     },
 
