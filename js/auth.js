@@ -145,14 +145,39 @@ const Auth = {
         try {
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
+                // 使用 text/plain 避免 CORS preflight (OPTIONS) 限制
+                mode: 'no-cors', 
                 body: JSON.stringify({
-                    action: 'login', // GAS logic: login with new user = register
+                    action: 'login',
                     username: usernameInput,
                     password: passwordInput,
                     data: initialStats
                 })
             });
-            const result = await response.json();
+
+            // 注意：mode: 'no-cors' 會導致 opaque response，無法讀取 body。
+            // 我們應該使用標準 fetch，但確保 GAS 伺服器允許 CORS。
+            // GAS 網頁應用程式通常透過重定向處理 CORS，所以我們需要標準模式。
+            
+            // 回復為標準模式並加入偵錯
+            const stdResponse = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'login',
+                    username: usernameInput,
+                    password: passwordInput,
+                    data: initialStats
+                })
+            });
+
+            const text = await stdResponse.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                console.error("GAS Response was not JSON:", text);
+                throw new Error("伺服器回傳格式錯誤 (Unexpected end of JSON)");
+            }
 
             if (result.success) {
                 this.currentUser = {
@@ -170,7 +195,7 @@ const Auth = {
             }
         } catch (error) {
             console.error("GAS register error:", error);
-            errorEl.textContent = '連線失敗，請檢查網頁應用程式部署設定。';
+            errorEl.textContent = '註冊過程發生錯誤：' + error.message;
             errorEl.classList.remove('hidden');
         } finally {
             regBtn.disabled = false;
