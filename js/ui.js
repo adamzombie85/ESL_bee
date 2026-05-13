@@ -499,12 +499,13 @@ const UI = {
         }
     },
 
-    updateChart() {
+    renderAccuracyChart() {
+        if (!Auth.currentUser || !Auth.currentUser.stats.word_mastery) return;
         const mastery = Auth.currentUser.stats.word_mastery;
         const words = Object.keys(mastery);
         if (words.length === 0) return;
 
-        const errorCounts = words.map(w => ({ word: w, errors: mastery[w].errors }))
+        const errorCounts = words.map(w => ({ word: w, errors: mastery[w].errors || 0 }))
                                  .filter(w => w.errors > 0)
                                  .sort((a, b) => b.errors - a.errors)
                                  .slice(0, 10);
@@ -512,13 +513,15 @@ const UI = {
         const labels = errorCounts.map(w => w.word);
         const data = errorCounts.map(w => w.errors);
 
-        const ctx = document.getElementById('accuracyChart').getContext('2d');
+        const canvas = document.getElementById('accuracyChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
         
-        if (this.chartInstance) {
-            this.chartInstance.destroy();
+        if (this.accuracyChartInstance) {
+            this.accuracyChartInstance.destroy();
         }
 
-        this.chartInstance = new Chart(ctx, {
+        this.accuracyChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
@@ -526,6 +529,22 @@ const UI = {
                     label: '錯誤次數',
                     data: data,
                     backgroundColor: '#FF9800',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1, precision: 0 }
+                    }
+                }
+            }
+        });
+    },
+
     updateDashboard() {
         if (!Auth.currentUser) return;
         
