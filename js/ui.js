@@ -580,16 +580,16 @@ const UI = {
 
             // Update progress percentages
             try {
-                const g3Prog = this.calculateBankProgress('G3');
-                const g5Prog = this.calculateBankProgress('G5');
+                const g3Prog = UI.calculateBankProgress('G3');
+                const g5Prog = UI.calculateBankProgress('G5');
                 if (document.getElementById('g3-progress')) document.getElementById('g3-progress').textContent = g3Prog;
                 if (document.getElementById('g5-progress')) document.getElementById('g5-progress').textContent = g5Prog;
             } catch (e) { console.error("Progress calc failed:", e); }
 
-            try { this.renderGalleryPreview(); } catch (e) { console.error("Gallery render failed:", e); }
-            try { this.renderRadarChart('G3', 'radarChartG3'); } catch (e) { console.error("G3 Radar failed:", e); }
-            try { this.renderRadarChart('G5', 'radarChartG5'); } catch (e) { console.error("G5 Radar failed:", e); }
-            try { this.renderAccuracyChart(); } catch (e) { console.error("Accuracy chart failed:", e); }
+            try { UI.renderGalleryPreview(); } catch (e) { console.error("Gallery render failed:", e); }
+            try { UI.renderRadarChart('G3', 'radarChartG3'); } catch (e) { console.error("G3 Radar failed:", e); }
+            try { UI.renderRadarChart('G5', 'radarChartG5'); } catch (e) { console.error("G5 Radar failed:", e); }
+            try { UI.renderAccuracyChart(); } catch (e) { console.error("Accuracy chart failed:", e); }
             
         } catch (e) {
             console.error("Dashboard update failed:", e);
@@ -727,7 +727,7 @@ const UI = {
             div.appendChild(p);
 
             div.addEventListener('click', () => {
-                this.showGalleryDetail(img);
+                UI.showGalleryDetail(img, pieces);
             });
 
             container.appendChild(div);
