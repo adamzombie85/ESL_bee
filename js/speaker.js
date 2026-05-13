@@ -3,32 +3,44 @@
 const Speaker = {
     synth: window.speechSynthesis,
     voice: null,
+    rate: 0.9, // Default rate
+    onVoicesLoaded: null,
 
     init() {
         // Wait for voices to be loaded
         if (this.synth.onvoiceschanged !== undefined) {
-            this.synth.onvoiceschanged = () => this.setVoice();
+            this.synth.onvoiceschanged = () => {
+                this.setVoice();
+                if (this.onVoicesLoaded) this.onVoicesLoaded();
+            };
         }
         this.setVoice();
     },
 
+    getEnglishVoices() {
+        return this.synth.getVoices().filter(v => v.lang.startsWith('en'));
+    },
+
+    setVoiceByName(name) {
+        const voices = this.getEnglishVoices();
+        const selected = voices.find(v => v.name === name);
+        if (selected) {
+            this.voice = selected;
+        }
+    },
+
     setVoice() {
-        const voices = this.synth.getVoices();
+        const voices = this.getEnglishVoices();
         if (voices.length === 0) return;
 
         // Try to find a good US English voice
-        // Prefer Google US English if available (Chrome)
-        let selectedVoice = voices.find(v => v.name === 'Google US English');
+        let selectedVoice = voices.find(v => v.name === 'Google US English') ||
+                            voices.find(v => v.lang === 'en-US' && v.localService) ||
+                            voices[0];
         
-        // Fallbacks
-        if (!selectedVoice) {
-            selectedVoice = voices.find(v => v.lang === 'en-US' && v.localService);
+        if (!this.voice) {
+            this.voice = selectedVoice;
         }
-        if (!selectedVoice) {
-            selectedVoice = voices.find(v => v.lang.startsWith('en'));
-        }
-        
-        this.voice = selectedVoice || voices[0];
     },
 
     speak(text, slow = false) {
@@ -50,8 +62,8 @@ const Speaker = {
                 utterThis.voice = this.voice;
             }
             
-            // Adjust rate for slower spelling if requested
-            utterThis.rate = slow ? 0.6 : 0.9;
+            // Apply configurable rate
+            utterThis.rate = slow ? Math.max(0.3, this.rate - 0.3) : this.rate;
             utterThis.pitch = 1.1; // Slightly higher pitch for kids
             
             this.synth.speak(utterThis);

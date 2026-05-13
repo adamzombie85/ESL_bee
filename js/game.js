@@ -19,26 +19,7 @@ const Game = {
 
     startBank(bankName) {
         this.currentBank = bankName;
-        const bankData = WORD_BANKS[bankName];
-        if (!bankData) return;
-        
-        const lengths = Object.keys(bankData).map(Number).sort((a,b)=>a-b);
-        let unlockedLevel = lengths[0];
-        
-        const progress = Auth.currentUser.stats[`${bankName.toLowerCase()}_progress`] || {};
-        for (let i = 0; i < lengths.length; i++) {
-            const l = lengths[i];
-            if (progress[l] && progress[l].unlocked) {
-                unlockedLevel = lengths[i+1] || lengths[i];
-            } else {
-                break;
-            }
-        }
-        
-        this.currentLevel = unlockedLevel;
-        
-        // Show Pokemon Selection first
-        UI.showPokemonSelect();
+        UI.showLevelSelect(bankName);
     },
 
     startSession(pokemonId) {
@@ -236,12 +217,17 @@ const Game = {
             alert(`恭喜通關！獲得了一塊寶可夢碎片！`);
         }
 
-        // Check if unlocked next level (need 90% accuracy in a session AND enough practice? Actually 90% is fine)
-        if (accuracy >= 0.9 && !progress[this.currentLevel].unlocked) {
-            // Need at least 20 words practiced in total to unlock next, or just the 90%
-            if (progress[this.currentLevel].totalPracticed >= 20) {
+        // Check if unlocked next level (dynamically check if all words are >= 3)
+        const words = WORD_BANKS[this.currentBank][this.currentLevel];
+        const isPassed = words.every(w => {
+            const m = Auth.currentUser.stats.word_mastery[w];
+            return m && m.streak >= 3;
+        });
+
+        if (isPassed) {
+            if (!progress[this.currentLevel].unlocked) {
                 progress[this.currentLevel].unlocked = true;
-                alert(`太棒了！你在 ${this.currentLevel} 字母挑戰達到精熟標準，解鎖下一關！`);
+                alert(`太棒了！你在 ${this.currentLevel} 字母題組中的所有詞彙都正確答對至少 3 次，正式通過本題組！`);
             }
         }
         
