@@ -606,19 +606,17 @@ const UI = {
                 scales: {
                     r: {
                         min: 0,
+                        max: 100,
                         angleLines: { color: 'rgba(0,0,0,0.1)' },
                         grid: { color: 'rgba(0,0,0,0.1)' },
                         pointLabels: {
                             font: { family: 'Inter', size: 12, weight: 'bold' }
                         },
                         ticks: {
-                            beginAtZero: true,
-                            min: 0,
-                            max: 100,
                             stepSize: 25,
-                            count: 5, // Force 5 levels: 0, 25, 50, 75, 100
                             backdropColor: 'transparent',
-                            font: { size: 10 }
+                            font: { size: 10 },
+                            showLabelBackdrop: false
                         }
                     }
                 },
