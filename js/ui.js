@@ -613,9 +613,12 @@ const UI = {
                         },
                         ticks: {
                             beginAtZero: true,
+                            min: 0,
                             max: 100,
                             stepSize: 25,
-                            backdropColor: 'transparent'
+                            count: 5, // Force 5 levels: 0, 25, 50, 75, 100
+                            backdropColor: 'transparent',
+                            font: { size: 10 }
                         }
                     }
                 },
