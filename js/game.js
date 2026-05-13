@@ -233,8 +233,8 @@ const Game = {
         
         Auth.currentUser.stats[`${this.currentBank.toLowerCase()}_progress`] = progress;
         Auth.saveProgress();
-        UI.showView('dashboard');
-        UI.updateDashboard();
-        UI.openArtShop(); // Show the gallery so they can see their new piece!
+        
+        // Instead of dashboard, show the new summary view
+        UI.showSessionSummary(accuracy, this.selectedPokemon);
     }
 };

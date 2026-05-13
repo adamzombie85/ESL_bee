@@ -105,6 +105,15 @@ const UI = {
             document.getElementById('rate-value').textContent = parseFloat(e.target.value).toFixed(1);
             Speaker.rate = parseFloat(e.target.value);
         });
+
+        // Session Summary Buttons
+        document.getElementById('summary-back-btn').addEventListener('click', () => {
+            this.showView('dashboard');
+            this.updateDashboard();
+        });
+        document.getElementById('summary-continue-btn').addEventListener('click', () => {
+            this.showLevelSelect(Game.currentBank);
+        });
     },
 
     populateVoices() {
@@ -125,7 +134,7 @@ const UI = {
 
     showView(viewId) {
         const targetId = viewId.startsWith('view-') ? viewId : `view-${viewId}`;
-        ['view-auth', 'view-dashboard', 'view-game', 'view-pokemon-select', 'view-level-select'].forEach(id => {
+        ['view-auth', 'view-dashboard', 'view-game', 'view-pokemon-select', 'view-level-select', 'view-session-summary'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             if (id === targetId) {
@@ -378,6 +387,30 @@ const UI = {
         const overlay = document.getElementById('feedback-overlay');
         overlay.classList.add('opacity-0');
         setTimeout(() => overlay.classList.add('hidden'), 300);
+    },
+
+    showSessionSummary(accuracy, pokemonImg) {
+        this.showView('view-session-summary');
+        
+        const preview = document.getElementById('earned-piece-preview');
+        // Clear styles and content
+        preview.innerHTML = '';
+        preview.style.backgroundColor = 'white';
+        preview.style.backgroundImage = `url('pokemons/${pokemonImg}')`;
+        preview.style.backgroundSize = 'contain';
+        preview.style.backgroundRepeat = 'no-repeat';
+        preview.style.backgroundPosition = 'center';
+        preview.style.filter = 'none'; // Ensure no silhouette filter remains
+
+        const inventory = Auth.currentUser.stats.pokemon_inventory || {};
+        const pieces = inventory[pokemonImg] || 0;
+        const msg = document.getElementById('summary-msg');
+        
+        if (pieces === 4) {
+            msg.textContent = "太厲害了！你已經完整收集了這隻寶可夢！";
+        } else {
+            msg.textContent = `挑戰成功！獲得了一塊碎片 (目前: ${pieces}/4)`;
+        }
     },
 
     updateLevelStats() {
