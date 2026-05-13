@@ -10,6 +10,15 @@ const firebaseConfig = {
     databaseURL: "https://pingkipquiz-default-rtdb.firebaseio.com"
 };
 
-// Initialize Firebase using compat SDK
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+let db = null;
+try {
+    if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        console.log("Firebase initialized successfully.");
+    } else {
+        console.warn("Firebase SDK not loaded. Working in local mode.");
+    }
+} catch (e) {
+    console.error("Firebase init failed:", e);
+}

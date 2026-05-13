@@ -12,13 +12,24 @@ const Auth = {
         document.getElementById('logout-btn').addEventListener('click', () => {
             this.logout();
         });
+        document.getElementById('sync-cloud-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('sync-cloud-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⌛ 同步中...';
+            btn.disabled = true;
+            await this.saveProgress(true);
+            setTimeout(() => {
+                btn.innerHTML = '✅ 已完成';
+                btn.disabled = false;
+                setTimeout(() => btn.innerHTML = originalText, 2000);
+            }, 500);
+        });
     },
 
     checkLogin() {
         const savedUser = localStorage.getItem('bee_current_user');
         if (savedUser) {
             this.currentUser = JSON.parse(savedUser);
-            this.fetchLatestProgress();
             UI.showView('dashboard');
             UI.updateDashboard();
         } else {
@@ -26,24 +37,8 @@ const Auth = {
         }
     },
 
-    fetchLatestProgress() {
-        if (!this.currentUser) return;
-        // Use .once('value') for better compatibility
-        db.ref('users/' + this.currentUser.username).once('value')
-            .then(snapshot => {
-                if (snapshot.exists()) {
-                    this.currentUser = snapshot.val();
-                    this.saveSession();
-                    UI.updateDashboard();
-                }
-            })
-            .catch(error => {
-                console.error("Firebase fetch error:", error);
-            });
-    },
-
-    login() {
-        const usernameInput = document.getElementById('auth-username').value.trim().replace(/[.#$[\]]/g, "_");
+    async login() {
+        const usernameInput = document.getElementById('auth-username').value.trim();
         const passwordInput = document.getElementById('auth-password').value.trim();
         const errorEl = document.getElementById('auth-error');
         const loginBtn = document.querySelector('#auth-form button');
@@ -54,56 +49,93 @@ const Auth = {
             return;
         }
 
+        if (GAS_WEB_APP_URL === "YOUR_GAS_WEB_APP_URL_HERE") {
+            errorEl.textContent = '請先在 gas-config.js 中設定 GAS 網址！';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
         // Show loading state
         loginBtn.disabled = true;
-        loginBtn.textContent = '正在連線資料庫...';
+        loginBtn.textContent = '正在連線試算表...';
         errorEl.classList.add('hidden');
 
-        db.ref('users/' + usernameInput).once('value')
-            .then(snapshot => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    if (userData.password === passwordInput) {
-                        this.currentUser = userData;
-                        this.saveSession();
-                        UI.showView('dashboard');
-                        UI.updateDashboard();
-                    } else {
-                        errorEl.textContent = '密碼錯誤！';
-                        errorEl.classList.remove('hidden');
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'login',
+                    username: usernameInput,
+                    password: passwordInput,
+                    data: {
+                        bee_coins: 0,
+                        inventory: [],
+                        pokemon_inventory: {},
+                        unlocked_levels: { G3: [3], G5: [5] },
+                        g3_progress: {},
+                        g5_progress: {},
+                        word_mastery: {}
                     }
-                } else {
-                    // New user registration
-                    const newUser = {
-                        username: usernameInput,
-                        password: passwordInput,
-                        stats: {
-                            bee_coins: 0,
-                            inventory: [],
-                            pokemon_inventory: {},
-                            unlocked_levels: { G3: [3], G5: [5] },
-                            g3_progress: {},
-                            g5_progress: {},
-                            word_mastery: {}
-                        }
-                    };
-                    return db.ref('users/' + usernameInput).set(newUser).then(() => {
-                        this.currentUser = newUser;
-                        this.saveSession();
-                        UI.showView('dashboard');
-                        UI.updateDashboard();
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Firebase login error:", error);
-                errorEl.textContent = '連線失敗：' + error.message + ' (請確認資料庫規則已開啟)';
-                errorEl.classList.remove('hidden');
-            })
-            .finally(() => {
-                loginBtn.disabled = false;
-                loginBtn.textContent = '進入蜂巢 🍯';
+                })
             });
+            const result = await response.json();
+
+            if (result.success) {
+                this.currentUser = {
+                    username: usernameInput,
+                    password: passwordInput,
+                    stats: result.data
+                };
+                this.saveSession();
+                UI.showView('dashboard');
+                UI.updateDashboard();
+            } else {
+                errorEl.textContent = result.message || '登入失敗';
+                errorEl.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("GAS login error:", error);
+            // Fallback to local
+            this.handleLocalLogin(usernameInput, passwordInput, errorEl);
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = '進入蜂巢 🍯';
+        }
+    },
+
+    handleLocalLogin(username, password, errorEl) {
+        let users = JSON.parse(localStorage.getItem('bee_users') || '{}');
+        if (users[username]) {
+            if (users[username].password === password) {
+                this.currentUser = users[username];
+                this.saveSession();
+                UI.showView('dashboard');
+                UI.updateDashboard();
+            } else {
+                errorEl.textContent = '密碼錯誤！(本機模式)';
+                errorEl.classList.remove('hidden');
+            }
+        } else {
+            const newUser = {
+                username: username,
+                password: password,
+                stats: {
+                    bee_coins: 0,
+                    inventory: [],
+                    pokemon_inventory: {},
+                    unlocked_levels: { G3: [3], G5: [5] },
+                    g3_progress: {},
+                    g5_progress: {},
+                    word_mastery: {}
+                }
+            };
+            users[username] = newUser;
+            localStorage.setItem('bee_users', JSON.stringify(users));
+            this.currentUser = newUser;
+            this.saveSession();
+            UI.showView('dashboard');
+            UI.updateDashboard();
+        }
     },
 
     logout() {
@@ -118,13 +150,39 @@ const Auth = {
         localStorage.setItem('bee_current_user', JSON.stringify(this.currentUser));
     },
 
-    saveProgress() {
+    async saveProgress(isManual = false) {
         if (!this.currentUser) return;
         this.saveSession();
-        // Use non-blocking save
-        db.ref('users/' + this.currentUser.username).set(this.currentUser)
-            .catch(error => {
-                console.error("Firebase save error:", error);
-            });
+        
+        // Save to Local always
+        let users = JSON.parse(localStorage.getItem('bee_users') || '{}');
+        users[this.currentUser.username] = this.currentUser;
+        localStorage.setItem('bee_users', JSON.stringify(users));
+
+        // Save to Google Sheets via GAS
+        if (GAS_WEB_APP_URL !== "YOUR_GAS_WEB_APP_URL_HERE") {
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'save',
+                        username: this.currentUser.username,
+                        password: this.currentUser.password,
+                        data: this.currentUser.stats
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    console.log("Progress synced to Google Sheets.");
+                } else if (isManual) {
+                    alert("同步失敗：" + result.message);
+                }
+            } catch (error) {
+                console.error("GAS save error:", error);
+                if (isManual) {
+                    alert("連線試算表失敗，請檢查網路。");
+                }
+            }
+        }
     }
 };
