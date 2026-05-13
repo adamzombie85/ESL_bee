@@ -545,6 +545,26 @@ const UI = {
         });
     },
 
+    calculateBankProgress(bankName) {
+        const bankData = WORD_BANKS[bankName];
+        if (!bankData) return 0;
+        
+        let totalWords = 0;
+        let masteredWords = 0;
+        
+        Object.values(bankData).forEach(words => {
+            words.forEach(w => {
+                totalWords++;
+                const m = Auth.currentUser.stats.word_mastery[w];
+                if (m && m.streak >= 6) {
+                    masteredWords++;
+                }
+            });
+        });
+        
+        return totalWords > 0 ? Math.round((masteredWords / totalWords) * 100) : 0;
+    },
+
     updateDashboard() {
         if (!Auth.currentUser) return;
         
@@ -559,15 +579,18 @@ const UI = {
             }
 
             // Update progress percentages
-            const g3Prog = this.calculateBankProgress('G3');
-            const g5Prog = this.calculateBankProgress('G5');
-            if (document.getElementById('g3-progress')) document.getElementById('g3-progress').textContent = g3Prog;
-            if (document.getElementById('g5-progress')) document.getElementById('g5-progress').textContent = g5Prog;
+            try {
+                const g3Prog = this.calculateBankProgress('G3');
+                const g5Prog = this.calculateBankProgress('G5');
+                if (document.getElementById('g3-progress')) document.getElementById('g3-progress').textContent = g3Prog;
+                if (document.getElementById('g5-progress')) document.getElementById('g5-progress').textContent = g5Prog;
+            } catch (e) { console.error("Progress calc failed:", e); }
 
-            this.renderGalleryPreview();
-            this.renderRadarChart('G3', 'radarChartG3');
-            this.renderRadarChart('G5', 'radarChartG5');
-            this.renderAccuracyChart();
+            try { this.renderGalleryPreview(); } catch (e) { console.error("Gallery render failed:", e); }
+            try { this.renderRadarChart('G3', 'radarChartG3'); } catch (e) { console.error("G3 Radar failed:", e); }
+            try { this.renderRadarChart('G5', 'radarChartG5'); } catch (e) { console.error("G5 Radar failed:", e); }
+            try { this.renderAccuracyChart(); } catch (e) { console.error("Accuracy chart failed:", e); }
+            
         } catch (e) {
             console.error("Dashboard update failed:", e);
         }
