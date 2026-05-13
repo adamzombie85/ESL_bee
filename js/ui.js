@@ -526,31 +526,32 @@ const UI = {
                     label: '錯誤次數',
                     data: data,
                     backgroundColor: '#FF9800',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
-                }
-            }
-        });
+    updateDashboard() {
+        if (!Auth.currentUser) return;
+        
+        document.getElementById('current-username').textContent = Auth.currentUser.username;
+        document.getElementById('coin-balance').textContent = Auth.currentUser.stats.bee_coins;
+
+        // Update progress percentages
+        const g3Prog = this.calculateBankProgress('G3');
+        const g5Prog = this.calculateBankProgress('G5');
+        document.getElementById('g3-progress').textContent = g3Prog;
+        document.getElementById('g5-progress').textContent = g5Prog;
+
+        this.renderGalleryPreview();
+        this.renderRadarChart('G3', 'radarChartG3');
+        this.renderRadarChart('G5', 'radarChartG5');
+        this.renderAccuracyChart();
     },
 
-    updateRadarChart() {
-        if (!Auth.currentUser || !WORD_BANKS.G3) return;
-
-        // Group words by length
+    renderRadarChart(bankName, canvasId) {
+        const bankData = WORD_BANKS[bankName];
         const lengths = {};
-        ['G3', 'G5'].forEach(bank => {
-            if (WORD_BANKS[bank]) {
-                for (const [len, words] of Object.entries(WORD_BANKS[bank])) {
-                    if (!lengths[len]) lengths[len] = new Set();
-                    words.forEach(w => lengths[len].add(w));
-                }
-            }
+        
+        Object.keys(bankData).forEach(len => {
+            const words = bankData[len];
+            if (!lengths[len]) lengths[len] = new Set();
+            words.forEach(w => lengths[len].add(w));
         });
 
         const labels = [];
@@ -562,13 +563,11 @@ const UI = {
                 let totalScore = 0;
                 words.forEach(w => {
                     const m = Auth.currentUser.stats.word_mastery[w];
-                    // Score is the current streak, capped at 6
                     if (m && m.streak) {
                         totalScore += Math.min(m.streak, 6);
                     }
                 });
                 
-                // Max possible score is 6 * number of words
                 const maxPossibleScore = words.length * 6;
                 const percentage = Math.round((totalScore / maxPossibleScore) * 100);
                 
@@ -579,20 +578,21 @@ const UI = {
 
         if (labels.length === 0) return;
 
-        const ctx = document.getElementById('radarChart').getContext('2d');
-        if (this.radarChartInstance) {
-            this.radarChartInstance.destroy();
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const chartKey = `${canvasId}Instance`;
+        if (this[chartKey]) {
+            this[chartKey].destroy();
         }
 
-        this.radarChartInstance = new Chart(ctx, {
+        this[chartKey] = new Chart(ctx, {
             type: 'radar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: '精熟度 (%)',
+                    label: `${bankName} 精熟度 (%)`,
                     data: data,
-                    backgroundColor: 'rgba(255, 152, 0, 0.4)',
-                    borderColor: '#FF9800',
+                    backgroundColor: bankName === 'G3' ? 'rgba(255, 152, 0, 0.4)' : 'rgba(33, 150, 243, 0.4)',
+                    borderColor: bankName === 'G3' ? '#FF9800' : '#2196F3',
                     pointBackgroundColor: '#212121',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
@@ -610,12 +610,12 @@ const UI = {
                         angleLines: { color: 'rgba(0,0,0,0.1)' },
                         grid: { color: 'rgba(0,0,0,0.1)' },
                         pointLabels: {
-                            font: { family: 'Inter', size: 12, weight: 'bold' }
+                            font: { family: 'Inter', size: 10, weight: 'bold' }
                         },
                         ticks: {
                             stepSize: 25,
                             backdropColor: 'transparent',
-                            font: { size: 10 },
+                            font: { size: 8 },
                             showLabelBackdrop: false
                         }
                     }
