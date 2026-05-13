@@ -1,8 +1,54 @@
 // battle.js
 
+const POKEMON_MOVES_MAP = {
+    // We will generate unique moves based on the pokemon image filename
+    // Standard movesets
+    "electric": [
+        { name: "十萬伏特", msg: "強大的電流貫穿了全場！" },
+        { name: "打雷", msg: "召喚了烏雲降下致命的雷擊！" },
+        { name: "電光一閃", msg: "化作一道白光在敵人間穿梭！" },
+        { name: "影子分身", msg: "幻化出無數殘影干擾對手！" }
+    ],
+    "fire": [
+        { name: "噴射火焰", msg: "熾熱的火焰席捲了對手！" },
+        { name: "大字爆炎", msg: "爆發出大字型的烈焰衝擊！" },
+        { name: "火焰輪", msg: "全身包裹火焰衝向對手！" },
+        { name: "煙幕", msg: "噴出濃煙遮蔽了視線！" }
+    ],
+    "water": [
+        { name: "水炮", msg: "噴射出高壓水流重擊對手！" },
+        { name: "泡沫光線", msg: "發射出無數繽紛的泡沫！" },
+        { name: "衝浪", msg: "召喚巨大的海浪淹沒戰場！" },
+        { name: "縮入殼中", msg: "縮進殼裡大幅提升了防禦！" }
+    ],
+    "grass": [
+        { name: "飛葉快刀", msg: "發射出如刀刃般鋒利的葉片！" },
+        { name: "陽光烈焰", msg: "吸收陽光後發射強大的光束！" },
+        { name: "藤鞭", msg: "揮動細長的藤蔓抽打對手！" },
+        { name: "寄生種子", msg: "在對手身上種下吸取體力的種子！" }
+    ],
+    "psychic": [
+        { name: "精神強念", msg: "釋放出強大的念力波！" },
+        { name: "幻象光線", msg: "發射出奇幻的光線干擾意識！" },
+        { name: "瞬間移動", msg: "瞬間消失並出現在對手身後！" },
+        { name: "冥想", msg: "靜下心來提升了特攻與特防！" }
+    ]
+};
+
 const BattleCenter = {
     selectedPokemon: null,
     isBattling: false,
+
+    getMovesForPokemon(img) {
+        // Deterministically pick a moveset based on filename hash
+        const types = Object.keys(POKEMON_MOVES_MAP);
+        let hash = 0;
+        for (let i = 0; i < img.length; i++) {
+            hash = img.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash) % types.length;
+        return POKEMON_MOVES_MAP[types[index]];
+    },
 
     init() {
         document.getElementById('open-battle-center-btn').addEventListener('click', () => {
@@ -159,14 +205,7 @@ const BattleCenter = {
         await this.writeLog(`[對戰開始] 火箭隊派出了 瓦斯彈 (Koffing)！`, logContainer);
         await new Promise(r => setTimeout(r, 500));
 
-        const myMoves = [
-            { name: "十萬伏特", msg: "強大的電流貫穿了全場！" },
-            { name: "撞擊", msg: "發揮了驚人的速度正面衝撞！" },
-            { name: "電光一閃", msg: "化作一道白光在敵人間穿梭！" },
-            { name: "鋼鐵尾巴", msg: "堅硬的尾巴重重地擊中了對手！" },
-            { name: "打雷", msg: "召喚了烏雲降下致命的雷擊！" },
-            { name: "影子分身", msg: "幻化出無數殘影干擾對手！" }
-        ];
+        const myMoves = this.getMovesForPokemon(this.selectedPokemon);
         const enemyMoves = [
             { name: "污泥攻擊", msg: "噴射出惡臭的毒泥！" },
             { name: "瞪眼", msg: "發出銳利的目光降低了防禦！" },
