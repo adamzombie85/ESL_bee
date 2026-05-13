@@ -117,6 +117,13 @@ const BattleCenter = {
         Auth.saveProgress();
         UI.updateDashboard();
 
+        // Start battle music
+        const battleMusic = document.getElementById('battle-bg-music');
+        if (battleMusic) {
+            battleMusic.currentTime = 0;
+            battleMusic.play().catch(e => console.warn("Battle music blocked:", e));
+        }
+
         this.isBattling = true;
         document.getElementById('battle-setup-view').classList.add('hidden');
         document.getElementById('battle-console-view').classList.remove('hidden');
@@ -152,21 +159,35 @@ const BattleCenter = {
         await this.writeLog(`[對戰開始] 火箭隊派出了 瓦斯彈 (Koffing)！`, logContainer);
         await new Promise(r => setTimeout(r, 500));
 
-        const myMoves = ["十萬伏特", "撞擊", "電光一閃", "鋼鐵尾巴", "打雷"];
-        const enemyMoves = ["污泥攻擊", "瞪眼", "咬咬", "毒針", "煙幕"];
+        const myMoves = [
+            { name: "十萬伏特", msg: "強大的電流貫穿了全場！" },
+            { name: "撞擊", msg: "發揮了驚人的速度正面衝撞！" },
+            { name: "電光一閃", msg: "化作一道白光在敵人間穿梭！" },
+            { name: "鋼鐵尾巴", msg: "堅硬的尾巴重重地擊中了對手！" },
+            { name: "打雷", msg: "召喚了烏雲降下致命的雷擊！" },
+            { name: "影子分身", msg: "幻化出無數殘影干擾對手！" }
+        ];
+        const enemyMoves = [
+            { name: "污泥攻擊", msg: "噴射出惡臭的毒泥！" },
+            { name: "瞪眼", msg: "發出銳利的目光降低了防禦！" },
+            { name: "咬咬", msg: "用鋒利的牙齒狠狠咬住！" },
+            { name: "毒針", msg: "發射出帶毒的細針！" },
+            { name: "煙幕", msg: "噴出濃煙遮蔽了視線！" },
+            { name: "黑霧", msg: "散發出不詳的氣息抵消了能力變化！" }
+        ];
 
         // 3-5 rounds of combat
-        const rounds = 3 + Math.floor(Math.random() * 3);
+        const rounds = 4 + Math.floor(Math.random() * 3); // 4-6 rounds for more length
         for (let i = 1; i <= rounds; i++) {
             await this.writeLog(`\n--- 第 ${i} 回合 ---`, logContainer);
             const myMove = myMoves[Math.floor(Math.random() * myMoves.length)];
-            await this.writeLog(`> 你的寶可夢使用了「${myMove}」！`, logContainer);
-            await this.writeLog(`  造成的傷害非常顯著。`, logContainer);
+            await this.writeLog(`> 你的寶可夢使用了「${myMove.name}」！`, logContainer);
+            await this.writeLog(`  ${myMove.msg}`, logContainer);
             await new Promise(r => setTimeout(r, 800));
 
             const enemyMove = enemyMoves[Math.floor(Math.random() * enemyMoves.length)];
-            await this.writeLog(`> 火箭隊的瓦斯彈使用了「${enemyMove}」！`, logContainer);
-            await this.writeLog(`  你的寶可夢受到了衝擊。`, logContainer);
+            await this.writeLog(`> 火箭隊的瓦斯彈使用了「${enemyMove.name}」！`, logContainer);
+            await this.writeLog(`  ${enemyMove.msg}`, logContainer);
             await new Promise(r => setTimeout(r, 1000));
         }
 
@@ -192,6 +213,12 @@ const BattleCenter = {
         Auth.currentUser.stats.battle_stats.count += 1;
         Auth.saveProgress();
         UI.updateDashboard();
+
+        // Stop battle music
+        const battleMusic = document.getElementById('battle-bg-music');
+        if (battleMusic) {
+            battleMusic.pause();
+        }
 
         clearInterval(timerInterval);
         this.isBattling = false;

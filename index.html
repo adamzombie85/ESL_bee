@@ -380,7 +380,7 @@
                 </div>
 
                 <!-- Battle Console (DOS Style) -->
-                <div id="battle-console-view" class="hidden flex-1 flex flex-col bg-black border-2 border-green-500/50 rounded-xl overflow-hidden font-mono text-green-500 p-6 shadow-[inset_0_0_20px_rgba(34,197,94,0.2)]">
+                <div id="battle-console-view" class="hidden flex-1 flex flex-col bg-black border-2 border-green-500/50 rounded-xl overflow-hidden font-mono text-green-500 p-6 shadow-[inset_0_0_20px_rgba(34,197,94,0.2)] max-h-[500px]">
                     <div class="flex justify-between border-b border-green-500/30 pb-2 mb-4 text-xs uppercase tracking-widest">
                         <span>Terminal: v1.0.2-BATTLE</span>
                         <span id="battle-timer">00:00:00</span>
@@ -408,6 +408,7 @@
     <audio id="sfx-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
     <audio id="sfx-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3" preload="auto"></audio>
     <audio id="sfx-unlock" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" preload="auto"></audio>
+    <audio id="battle-bg-music" src="music/battle_music.mp3" loop preload="auto"></audio>
 
     <!-- Google Sheets Sync (GAS) -->
     <script src="js/gas-config.js"></script>
