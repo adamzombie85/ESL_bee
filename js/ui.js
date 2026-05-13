@@ -70,9 +70,10 @@ const UI = {
     },
 
     showView(viewId) {
+        const targetId = viewId.startsWith('view-') ? viewId : `view-${viewId}`;
         ['view-auth', 'view-dashboard', 'view-game', 'view-pokemon-select'].forEach(id => {
             const el = document.getElementById(id);
-            if (id === viewId) {
+            if (id === targetId) {
                 el.classList.remove('hidden');
                 setTimeout(() => el.classList.remove('opacity-0'), 10);
             } else {
