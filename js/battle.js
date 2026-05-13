@@ -34,8 +34,8 @@ const BattleCenter = {
             return;
         }
 
-        // 2. Check Daily Limit
-        if (this.isDailyLimitReached()) {
+        // 2. Check Hourly Limit
+        if (this.isLimitReached()) {
             alert('寶可夢玩家累了要休息了');
             return;
         }
@@ -44,7 +44,7 @@ const BattleCenter = {
         this.selectedPokemon = null;
         document.getElementById('start-battle-action-btn').disabled = true;
         this.populatePokemonList(completedPokemons);
-        this.updateDailyCountUI();
+        this.updateLimitUI();
 
         const modal = document.getElementById('battle-center-modal');
         modal.classList.remove('hidden');
@@ -61,22 +61,24 @@ const BattleCenter = {
         setTimeout(() => modal.classList.add('hidden'), 300);
     },
 
-    isDailyLimitReached() {
-        const stats = Auth.currentUser.stats.battle_stats || { daily_count: 0, last_date: "" };
-        const today = new Date().toDateString();
-        if (stats.last_date !== today) {
-            // Reset for new day
-            stats.daily_count = 0;
-            stats.last_date = today;
+    isLimitReached() {
+        const stats = Auth.currentUser.stats.battle_stats || { count: 0, window_start: 0 };
+        const now = Date.now();
+        const ONE_HOUR = 60 * 60 * 1000;
+
+        if (!stats.window_start || now - stats.window_start > ONE_HOUR) {
+            // Reset for new hour window
+            stats.count = 0;
+            stats.window_start = now;
             Auth.currentUser.stats.battle_stats = stats;
             Auth.saveProgress();
         }
-        return stats.daily_count >= 3;
+        return stats.count >= 3;
     },
 
-    updateDailyCountUI() {
-        const count = Auth.currentUser.stats.battle_stats?.daily_count || 0;
-        document.getElementById('battle-daily-limit-text').textContent = `今日剩餘次數: ${3 - count} / 3`;
+    updateLimitUI() {
+        const stats = Auth.currentUser.stats.battle_stats || { count: 0 };
+        document.getElementById('battle-limit-text').textContent = `每小時剩餘次數: ${3 - stats.count} / 3`;
     },
 
     populatePokemonList(list) {
@@ -187,7 +189,7 @@ const BattleCenter = {
         }
 
         // Update stats
-        Auth.currentUser.stats.battle_stats.daily_count += 1;
+        Auth.currentUser.stats.battle_stats.count += 1;
         Auth.saveProgress();
         UI.updateDashboard();
 
@@ -195,7 +197,7 @@ const BattleCenter = {
         this.isBattling = false;
         document.getElementById('battle-status-msg').textContent = '對戰結束。';
         document.getElementById('close-console-btn').classList.remove('hidden');
-        this.updateDailyCountUI();
+        this.updateLimitUI();
     },
 
     async writeLog(text, container, className = '') {
