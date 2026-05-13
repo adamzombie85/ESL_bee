@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Bee 藝術收藏家</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bee-yellow': '#FFC107',
+                        'bee-yellow-light': '#FFE082',
+                        'bee-dark': '#212121',
+                        'honey': '#FF9800',
+                        'honey-dark': '#F57C00',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        'fredoka': ['"Fredoka One"', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-amber-50 text-bee-dark font-sans h-screen w-screen overflow-hidden flex flex-col hexagon-pattern">
+
+    <!-- Header -->
+    <header class="bg-bee-dark text-bee-yellow p-4 shadow-md flex justify-between items-center z-10 relative">
+        <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18-.21 0-.41-.06-.57-.18l-7.9-4.44A.991.991 0 013 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18.21 0 .41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9zM12 4.15L5 8.05v7.9l7 3.9 7-3.9v-7.9l-7-3.9z"/>
+            </svg>
+            <h1 class="text-2xl font-fredoka tracking-wide">Spelling Bee Collector</h1>
+        </div>
+        <div id="user-info" class="hidden flex items-center gap-4">
+            <div class="flex items-center bg-bee-yellow text-bee-dark px-3 py-1 rounded-full font-bold shadow-inner">
+                <span class="mr-1">🪙</span> <span id="coin-balance">0</span> Bee Coins
+            </div>
+            <span id="current-username" class="font-bold"></span>
+            <button id="logout-btn" class="text-sm hover:text-white transition">登出</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 overflow-y-auto relative">
+        
+        <!-- View 1: Auth (Login/Register) -->
+        <section id="view-auth" class="absolute inset-0 flex items-center justify-center p-4 transition-opacity duration-300">
+            <div class="glass-panel max-w-md w-full p-8 rounded-3xl shadow-2xl transform transition-transform hover:scale-105">
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 bg-bee-yellow rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg border-4 border-bee-dark">
+                        <span class="text-5xl">🐝</span>
+                    </div>
+                    <h2 class="text-3xl font-fredoka text-bee-dark mb-2">歡迎來到蜂巢</h2>
+                    <p class="text-gray-600 font-medium">註冊或登入以儲存你的進度與藝術品</p>
+                </div>
+                <form id="auth-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">小蜜蜂代號 (Username)</label>
+                        <input type="text" id="auth-username" required class="w-full px-4 py-3 rounded-xl border-2 border-bee-yellow-light focus:border-honey focus:outline-none bg-white/80 transition" placeholder="輸入名稱">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">通關密碼 (Password)</label>
+                        <input type="password" id="auth-password" required class="w-full px-4 py-3 rounded-xl border-2 border-bee-yellow-light focus:border-honey focus:outline-none bg-white/80 transition" placeholder="輸入密碼">
+                    </div>
+                    <div id="auth-error" class="text-red-500 text-sm hidden font-semibold"></div>
+                    <button type="submit" class="w-full bg-bee-dark text-bee-yellow font-bold text-lg py-3 rounded-xl shadow-lg hover:bg-black transition transform active:scale-95">
+                        進入蜂巢 🍯
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- View 2: Dashboard (Bank Selection & Stats) -->
+        <section id="view-dashboard" class="hidden absolute inset-0 p-6 flex flex-col gap-6 max-w-6xl mx-auto overflow-y-auto pb-20">
+            <!-- Header section of dashboard -->
+            <div class="flex justify-between items-end">
+                <h2 class="text-4xl font-fredoka text-bee-dark drop-shadow-md">選擇題庫開始挑戰！</h2>
+            </div>
+
+            <!-- Word Bank Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- G3 Bank -->
+                <button data-bank="G3" class="bank-btn relative overflow-hidden bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border-4 border-bee-yellow hover:border-honey transition group text-left">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-bee-yellow opacity-20 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <h3 class="text-3xl font-fredoka mb-2">G3 Spelling Bee</h3>
+                    <p class="text-gray-600 font-semibold mb-4">基礎詞彙，適合初學小蜜蜂</p>
+                    <div class="flex justify-between items-center mt-auto">
+                        <span class="text-sm bg-bee-yellow/30 px-3 py-1 rounded-full font-bold">進度: <span id="g3-progress">0</span>%</span>
+                        <span class="text-2xl group-hover:translate-x-2 transition-transform">➡️</span>
+                    </div>
+                </button>
+                <!-- G5 Bank -->
+                <button data-bank="G5" class="bank-btn relative overflow-hidden bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border-4 border-bee-yellow hover:border-honey transition group text-left">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-honey opacity-20 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                    <h3 class="text-3xl font-fredoka mb-2">G5 Spelling Bee</h3>
+                    <p class="text-gray-600 font-semibold mb-4">進階挑戰，包含同音字與長單字</p>
+                    <div class="flex justify-between items-center mt-auto">
+                        <span class="text-sm bg-honey/30 px-3 py-1 rounded-full font-bold">進度: <span id="g5-progress">0</span>%</span>
+                        <span class="text-2xl group-hover:translate-x-2 transition-transform">➡️</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Art Gallery Preview & Stats -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+                <!-- Gallery -->
+                <div class="lg:col-span-2 glass-panel rounded-3xl p-6 flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-fredoka flex items-center gap-2">🐾 寶可夢圖鑑</h3>
+                        <button id="open-gallery-btn" class="bg-bee-dark text-bee-yellow px-4 py-2 rounded-xl font-bold hover:bg-black transition text-sm">查看圖鑑</button>
+                    </div>
+                    <div id="gallery-preview" class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="glass-panel rounded-3xl p-6">
+                    <h3 class="text-2xl font-fredoka mb-4">📈 學習曲線</h3>
+                    <div class="h-48 w-full">
+                        <canvas id="accuracyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 2.5: Pokemon Selection (Pre-Game) -->
+        <section id="view-pokemon-select" class="hidden absolute inset-0 p-6 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm z-30">
+            <div class="glass-panel max-w-4xl w-full p-8 rounded-3xl shadow-2xl flex flex-col items-center max-h-[90vh]">
+                <h2 class="text-3xl font-fredoka text-bee-dark mb-2">選擇你要收集的寶可夢！</h2>
+                <p class="text-gray-600 font-bold mb-6">完成接下來的 10 題挑戰與錯題練習，就能獲得一塊碎片喔！</p>
+                
+                <div id="pokemon-select-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-auto w-full p-4 custom-scrollbar">
+                    <!-- Populated by JS -->
+                </div>
+                
+                <div class="mt-8 flex gap-4">
+                    <button id="cancel-select-btn" class="px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-200 transition">取消返回</button>
+                    <button id="start-session-btn" disabled class="bg-honey text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-honey-dark transition disabled:opacity-50 disabled:cursor-not-allowed">開始挑戰！</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 3: Game Screen -->
+        <section id="view-game" class="hidden absolute inset-0 flex flex-col items-center justify-center p-4">
+            <div class="absolute top-4 left-4">
+                <button id="back-to-dash-btn" class="bg-white/80 backdrop-blur px-4 py-2 rounded-xl font-bold shadow hover:bg-gray-100 transition flex items-center gap-2">
+                    <span>⬅️</span> 返回基地
+                </button>
+            </div>
+
+            <div class="w-full max-w-2xl glass-panel rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                <div id="level-indicator" class="absolute top-0 left-0 bg-bee-yellow text-bee-dark px-4 py-1 rounded-br-2xl font-bold shadow-md z-10">
+                    5 字母挑戰 (1/10)
+                </div>
+                <div id="practice-indicator" class="absolute top-0 right-0 bg-red-500 text-white px-4 py-1 rounded-bl-2xl font-bold shadow-md z-10 hidden animate-pulse">
+                    ⚠️ 錯題練習模式
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="play-word-btn" class="w-24 h-24 bg-bee-dark text-bee-yellow rounded-full mx-auto mb-8 flex items-center justify-center shadow-[0_0_20px_rgba(33,33,33,0.3)] hover:scale-110 active:scale-95 transition cursor-pointer group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                    </button>
+                    
+                    <div id="word-input-container" class="flex justify-center gap-2 mb-8 flex-wrap">
+                        <!-- Inputs generated by JS -->
+                    </div>
+
+                    <div class="flex justify-between items-center max-w-xs mx-auto mb-4">
+                        <button id="skip-btn" class="text-gray-500 font-bold hover:text-bee-dark transition">跳過 (Skip)</button>
+                        <button id="submit-btn" class="bg-honey text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-honey-dark transition transform active:scale-95">送出 (Enter)</button>
+                    </div>
+                </div>
+
+                <!-- Game Feedback Overlay -->
+                <div id="feedback-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300 z-20">
+                    <div id="feedback-emoji" class="text-7xl mb-4 animate-bounce">🐝</div>
+                    <h2 id="feedback-text" class="text-4xl font-fredoka mb-2">正確！</h2>
+                    <p id="feedback-coins" class="text-xl font-bold text-honey flex items-center gap-1">+ <span class="coin-amount">10</span> 🪙</p>
+                </div>
+            </div>
+
+            <!-- Level Stats -->
+            <div class="w-full max-w-2xl mt-6 flex justify-between gap-4">
+                <div class="glass-panel flex-1 rounded-2xl p-4 text-center">
+                    <p class="text-sm text-gray-600 font-bold">本關精熟度</p>
+                    <p class="text-2xl font-fredoka text-bee-dark"><span id="level-accuracy">0</span>%</p>
+                    <div class="w-full bg-gray-200 h-2 rounded-full mt-2 overflow-hidden">
+                        <div id="accuracy-bar" class="bg-green-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+                <div class="glass-panel flex-1 rounded-2xl p-4 text-center">
+                    <p class="text-sm text-gray-600 font-bold">連續答對次數</p>
+                    <p class="text-2xl font-fredoka text-honey" id="word-streak">0 / 3</p>
+                    <div class="flex justify-center gap-1 mt-2" id="streak-dots">
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 4: Pokemon Gallery Modal -->
+        <div id="art-shop-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+            <div class="bg-[#fcfaf2] w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+                <div class="bg-bee-dark text-bee-yellow p-4 flex justify-between items-center">
+                    <h2 class="text-2xl font-fredoka">🐾 寶可夢圖鑑</h2>
+                    <div class="flex gap-4 items-center">
+                        <button id="close-shop-btn" class="text-white hover:text-red-400 font-bold text-xl px-2">&times;</button>
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-8">
+                    <!-- Pokemon Selection List -->
+                    <div class="w-full lg:w-1/3 space-y-4" id="art-list">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Main Canvas Area -->
+                    <div class="flex-1 flex flex-col items-center justify-center bg-gray-100 rounded-2xl p-6 shadow-inner relative border-[8px] border-bee-yellow">
+                        <h3 id="current-art-title" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-bold shadow-md z-10 text-bee-dark">Pokemon</h3>
+                        
+                        <div id="art-canvas" class="relative bg-white shadow-xl max-w-full max-h-full aspect-square w-full sm:w-[400px]">
+                            <!-- CSS Grid slices will be appended here (2x2) -->
+                        </div>
+
+                        <div class="absolute bottom-4 right-4 bg-white/90 p-4 rounded-2xl shadow-lg text-center backdrop-blur-sm">
+                            <p class="text-sm font-bold text-gray-600" id="collection-status-text">收集進度: 0 / 4</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Audio elements -->
+    <audio id="sfx-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-unlock" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" preload="auto"></audio>
+
+    <script src="js/words.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/speaker.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

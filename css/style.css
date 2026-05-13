@@ -1,0 +1,147 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;600;800&display=swap');
+
+/* Honeycomb Background Pattern */
+.hexagon-pattern {
+    background-color: #fff9e6;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='103.92' viewBox='0 0 60 103.92' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffd54f' fill-opacity='0.15'%3E%3Cpath d='M30 103.923L0 86.603V51.961l30-17.32 30 17.32v34.642l-30 17.32zM30 51.961L0 34.64V0l30-17.32 30 17.32v34.642L30 51.96z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+/* Custom Scrollbar for horizontal lists */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #FFC107;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #FF9800;
+}
+
+/* Word Input Fields */
+.letter-input {
+    width: 3rem;
+    height: 4rem;
+    font-size: 2rem;
+    text-align: center;
+    text-transform: lowercase;
+    border: 3px solid #FFE082;
+    border-radius: 12px;
+    background: white;
+    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+    color: #212121;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.letter-input:focus {
+    outline: none;
+    border-color: #FF9800;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(255, 152, 0, 0.2);
+}
+.letter-input.correct {
+    border-color: #4CAF50;
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+.letter-input.wrong {
+    border-color: #F44336;
+    background-color: #FFEBEE;
+    color: #C62828;
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Art Gallery Canvas & Grid */
+.art-piece {
+    position: absolute;
+    background-size: var(--bg-size);
+    background-image: var(--bg-img);
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: all 0.5s ease-out;
+}
+
+.art-piece.locked {
+    filter: grayscale(100%) brightness(0.3) blur(2px);
+    background-image: none !important;
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.art-piece.locked::after {
+    content: "🔒";
+    font-size: 1.5rem;
+    opacity: 0.5;
+}
+.art-piece.locked:hover {
+    background-color: #444;
+}
+
+.art-piece.unlocking {
+    animation: unlockFlash 1s ease-out forwards;
+}
+
+@keyframes unlockFlash {
+    0% { transform: scale(0.95); filter: brightness(2) drop-shadow(0 0 10px #FFC107); z-index: 10; }
+    50% { transform: scale(1.05); filter: brightness(1.5) drop-shadow(0 0 20px #FF9800); z-index: 10; }
+    100% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 0 transparent); z-index: 1; }
+}
+
+/* Art thumbnail in list */
+.art-thumb {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.art-thumb.selected {
+    border-color: #FF9800;
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.4);
+    transform: scale(1.02);
+}
+.art-thumb.completed {
+    position: relative;
+}
+.art-thumb.completed::after {
+    content: "⭐";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #FFC107;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
