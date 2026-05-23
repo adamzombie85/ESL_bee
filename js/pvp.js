@@ -729,5 +729,6 @@ const PvP = {
 
 // Initialize after DOM loads
 document.addEventListener('DOMContentLoaded', () => {
+    window.PvP = PvP;
     PvP.init();
 });
