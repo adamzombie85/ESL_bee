@@ -6,3 +6,4 @@
 # Secret config files
 js/firebase-config.js
 js/gas-config.js
+backend/node_modules/

@@ -1,0 +1,24 @@
+name = "esl-bee-pvp"
+main = "src/index.js"
+compatibility_date = "2024-03-20"
+
+# Enable Durable Objects
+[[durable_objects.bindings]]
+name = "BATTLE_ROOM"
+class_name = "BattleRoom"
+
+# Bind a KV Namespace for the Lobby (Online presence)
+[[kv_namespaces]]
+binding = "LOBBY_PRESENCE"
+id = "807f1835ee19476d86d015b519ab54f4"
+
+# Bind a D1 database for battle records
+[[d1_databases]]
+binding = "DB"
+database_name = "esl-bee-pvp-db"
+database_id = "51b6e4cc-2e1a-47e5-972b-ddfa821d652a"
+
+# Required migrations configuration for DO
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BattleRoom"]

@@ -176,10 +176,15 @@
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-fredoka flex items-center gap-2">🐾 寶可夢圖鑑收藏</h3>
                     <div class="flex items-center gap-3">
-                        <button id="open-battle-center-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:bg-red-600 transition flex items-center gap-2">
-                            <span>⚔️</span> 寶可夢對戰中心
-                        </button>
-                        <span class="hidden md:inline text-sm font-bold bg-bee-yellow/20 px-3 py-1 rounded-full text-bee-dark">完成挑戰賺取拼圖碎片！</span>
+                        <div class="flex gap-2">
+                            <button id="open-battle-center-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:bg-red-600 transition flex items-center gap-2 text-sm md:text-base">
+                                <span>⚔️</span> 單機對戰
+                            </button>
+                            <button id="open-pvp-lobby-btn" class="bg-blue-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:bg-blue-600 transition flex items-center gap-2 text-sm md:text-base">
+                                <span>🌐</span> 真人連線
+                            </button>
+                        </div>
+                        <span class="hidden lg:inline text-sm font-bold bg-bee-yellow/20 px-3 py-1 rounded-full text-bee-dark">完成挑戰賺取拼圖碎片！</span>
                     </div>
                 </div>
                 <div id="gallery-preview" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 overflow-y-auto pb-4 custom-scrollbar pr-2">
@@ -401,6 +406,157 @@
             </div>
         </div>
 
+        <!-- View 6: PvP Lobby Modal -->
+        <div id="pvp-lobby-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-[60] p-4 opacity-0 transition-opacity duration-300">
+            <div class="glass-panel max-w-4xl w-full p-8 rounded-3xl shadow-2xl flex flex-col relative transform scale-95 transition-transform duration-300 bg-blue-950 border-4 border-blue-500/30 min-h-[500px]">
+                <button id="close-lobby-modal-btn" class="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl transition">&times;</button>
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-fredoka text-blue-400 mb-2">🌐 ESL-Bee 競技大廳 🌐</h2>
+                    <p class="text-blue-200 font-bold">尋找對手，進行即時雙人拼字對決！</p>
+                </div>
+                <div class="flex-1 bg-black/40 rounded-2xl p-4 border border-blue-500/30 overflow-y-auto">
+                    <h3 class="text-xl font-bold text-white mb-4 border-b border-blue-500/30 pb-2">在線玩家 (<span id="lobby-online-count">0</span>)</h3>
+                    <div id="lobby-player-list" class="space-y-2">
+                        <!-- Populated by JS -->
+                        <div class="text-center text-gray-400 py-8">連線中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PvP Wager Modal -->
+        <div id="pvp-wager-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[65] p-4">
+            <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-400">
+                <div class="text-6xl mb-4">💰</div>
+                <h3 class="text-2xl font-fredoka text-bee-dark mb-2">設定下注金額</h3>
+                <p class="text-gray-600 font-bold mb-4">對戰將扣除雙方的 Bee Coins，贏家將獲得雙倍獎勵！</p>
+                <div class="mb-6 text-left">
+                    <label class="block text-gray-700 font-bold mb-2">下注金額 (最低 100)</label>
+                    <input type="number" id="pvp-wager-input" value="100" min="100" class="w-full text-center text-3xl font-black rounded-xl border-2 border-gray-300 p-3 bg-gray-50 focus:border-yellow-400 focus:outline-none text-bee-dark">
+                </div>
+                <div class="flex gap-4">
+                    <button id="cancel-wager-btn" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300 transition">取消</button>
+                    <button id="confirm-wager-btn" class="flex-1 bg-yellow-400 text-bee-dark py-3 rounded-xl font-bold shadow-lg hover:bg-yellow-300 transition">發出挑戰！</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenge Prompt Popup -->
+        <div id="challenge-prompt-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[70] p-4">
+            <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-bounce-once border-4 border-yellow-400">
+                <div class="text-6xl mb-4">⚔️</div>
+                <h3 class="text-2xl font-fredoka text-bee-dark mb-2">收到挑戰！</h3>
+                <p class="text-gray-600 font-bold mb-2"><span id="challenger-name" class="text-red-500 text-xl">某人</span> 向你發起了拼字對決！</p>
+                <p class="text-yellow-600 font-black mb-6 text-lg bg-yellow-100 py-2 rounded-lg border border-yellow-300">下注金額：<span id="challenge-wager">0</span> 金幣</p>
+                <div class="flex gap-4">
+                    <button id="reject-challenge-btn" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300 transition">拒絕</button>
+                    <button id="accept-challenge-btn" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-600 transition">接受挑戰</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 7: PvP Preparation Modal -->
+        <div id="pvp-prep-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center z-[80] p-4 opacity-0 transition-opacity duration-300">
+            <div class="glass-panel max-w-4xl w-full p-8 rounded-3xl shadow-2xl flex flex-col relative transform scale-95 transition-transform duration-300 bg-indigo-950 border-4 border-indigo-500/30">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-fredoka text-indigo-400 mb-2">⚔️ 戰前準備 ⚔️</h2>
+                    <p class="text-indigo-200 font-bold">選擇你要派出的兩隻寶可夢，準備迎戰！</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Main Pokemon -->
+                    <div class="bg-black/40 p-6 rounded-2xl border border-indigo-500/30 text-center relative">
+                        <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white px-4 py-1 rounded-full font-bold shadow">先發寶可夢</span>
+                        <div id="prep-main-img" class="w-32 h-32 mx-auto border-2 border-dashed border-gray-500 rounded-xl mb-4 flex items-center justify-center bg-white/5 cursor-pointer hover:border-red-400 transition" onclick="PvP.openPokemonSelector('main')">
+                            <span class="text-gray-500 text-sm">點擊選擇</span>
+                        </div>
+                        <p id="prep-main-name" class="text-white font-bold h-6">-</p>
+                    </div>
+                    <!-- Support Pokemon -->
+                    <div class="bg-black/40 p-6 rounded-2xl border border-indigo-500/30 text-center relative">
+                        <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-1 rounded-full font-bold shadow">後備寶可夢</span>
+                        <div id="prep-sub-img" class="w-32 h-32 mx-auto border-2 border-dashed border-gray-500 rounded-xl mb-4 flex items-center justify-center bg-white/5 cursor-pointer hover:border-blue-400 transition" onclick="PvP.openPokemonSelector('sub')">
+                            <span class="text-gray-500 text-sm">點擊選擇</span>
+                        </div>
+                        <p id="prep-sub-name" class="text-white font-bold h-6">-</p>
+                    </div>
+                </div>
+
+                <button id="pvp-ready-btn" disabled class="w-full bg-indigo-600 text-white text-2xl font-bold py-5 rounded-2xl shadow-[0_0_30px_rgba(79,70,229,0.4)] hover:bg-indigo-500 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                    準備就緒 (0/2)
+                </button>
+            </div>
+        </div>
+
+        <!-- View 9: PvP Pokemon Selector Modal -->
+        <div id="pvp-pokemon-selector-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center z-[100] p-4 opacity-0 transition-opacity duration-300">
+            <div class="glass-panel max-w-3xl w-full p-8 rounded-3xl shadow-2xl flex flex-col relative transform scale-95 transition-transform duration-300 bg-gray-900 border-4 border-indigo-500/30">
+                <button onclick="document.getElementById('pvp-pokemon-selector-modal').classList.add('hidden'); document.getElementById('pvp-pokemon-selector-modal').classList.remove('flex');" class="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl transition">&times;</button>
+                <h3 class="text-2xl font-bold text-white mb-6 text-center">選擇你要派出的寶可夢</h3>
+                <div id="pvp-pokemon-list" class="flex flex-wrap gap-4 justify-center overflow-y-auto max-h-[60vh] custom-scrollbar pb-4">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- View 8: PvP Battle UI (Canvas) -->
+        <div id="pvp-battle-view" class="fixed inset-0 bg-black hidden z-[90] flex-col md:flex-row">
+            <!-- Left Side: Canvas & Input (70%) -->
+            <div class="flex-1 md:w-[70%] flex flex-col h-[60vh] md:h-full">
+                <!-- Canvas area -->
+                <div class="w-full relative flex-1" style="min-height: 250px;">
+                    <canvas id="pvp-canvas" class="w-full h-full object-cover shadow-[0_4px_20px_rgba(0,0,0,0.5)]"></canvas>
+                    <!-- Central VS Text -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-red-500 italic drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] opacity-50 pointer-events-none">VS</div>
+                </div>
+                
+                <!-- Spelling Input Area -->
+                <div class="bg-gray-900 p-4 md:p-6 flex flex-col items-center justify-center relative border-t-4 border-yellow-500 shrink-0 min-h-[250px] md:min-h-[300px]">
+                    <div class="absolute top-4 left-4 bg-yellow-500 text-black font-bold px-4 py-1 rounded-full shadow-lg">回合: <span id="pvp-round-num">1</span>/20</div>
+                    <div class="absolute top-4 right-4 bg-red-600 text-white font-mono font-bold px-4 py-1 rounded-full shadow-lg flex items-center gap-2">
+                        ⏱ <span id="pvp-timer">15.0</span>
+                    </div>
+
+                    <!-- Word presentation -->
+                    <div class="text-center mb-6 mt-8">
+                        <button id="pvp-play-word-btn" class="w-16 h-16 md:w-20 md:h-20 bg-blue-500 text-white rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:scale-110 transition cursor-pointer group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                            </svg>
+                        </button>
+                        <p id="pvp-word-meaning" class="text-gray-300 text-lg font-bold min-h-[28px]">(請聽發音拼寫單字)</p>
+                    </div>
+
+                    <!-- Input boxes -->
+                    <div id="pvp-word-input-container" class="flex justify-center gap-1 md:gap-2 mb-6 flex-wrap">
+                        <!-- Inputs generated by JS -->
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button id="pvp-skip-btn" class="bg-gray-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold shadow hover:bg-gray-600 transition text-sm md:text-base">放棄本題</button>
+                        <button id="pvp-submit-btn" class="bg-yellow-500 text-black px-6 md:px-10 py-2 md:py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(234,179,8,0.5)] hover:bg-yellow-400 transition transform active:scale-95 text-sm md:text-base">提交答案</button>
+                    </div>
+
+                    <!-- Feedback Overlay -->
+                    <div id="pvp-feedback" class="absolute inset-0 bg-black/80 backdrop-blur-sm hidden flex-col items-center justify-center z-20">
+                        <div id="pvp-feedback-text" class="text-4xl md:text-6xl font-black text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] mb-4 animate-bounce-once text-center"></div>
+                        <div id="pvp-feedback-sub" class="text-xl md:text-2xl text-yellow-400 font-bold text-center">等待對手...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Text Log Console (30%) -->
+            <div class="w-full md:w-[30%] bg-gray-950 border-t-2 md:border-t-0 md:border-l-2 border-gray-800 flex flex-col h-[40vh] md:h-full">
+                <div class="p-3 bg-gray-900 border-b border-gray-800 text-green-400 font-mono font-bold flex justify-between items-center">
+                    <span>> BATTLE_LOG.exe</span>
+                </div>
+                <div id="pvp-console-logs" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm md:text-base font-mono text-gray-300">
+                    <div class="text-green-500">系統初始化完成，連線建立...</div>
+                    <div class="text-green-500">等待戰鬥開始...</div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Audio elements -->
@@ -419,6 +575,8 @@
     <script src="js/speaker.js"></script>
     <script src="js/game.js"></script>
     <script src="js/battle.js"></script>
+    <script src="js/battle-canvas.js"></script>
+    <script src="js/pvp.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
 </body>

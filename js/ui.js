@@ -365,13 +365,37 @@ const UI = {
 
         const inventory = Auth.currentUser.stats.pokemon_inventory || {};
 
-        POKEMON_IMAGES.forEach((img, idx) => {
+        let selectablePokemons = POKEMON_IMAGES.filter(img => (inventory[img] || 0) < 4);
+
+        if (selectablePokemons.length === 0) {
+            grid.innerHTML = '<p class="text-white col-span-full font-bold text-lg text-center my-4">你已經收集完所有的寶可夢了！🎉</p>';
+            selectablePokemons = [...POKEMON_IMAGES]; // fallback show all if all completed
+        } else {
+            // Sort: 0 pieces first, then ascending
+            selectablePokemons.sort((a, b) => {
+                const piecesA = inventory[a] || 0;
+                const piecesB = inventory[b] || 0;
+                return piecesA - piecesB;
+            });
+        }
+
+        const recentBatch = new Set(POKEMON_IMAGES.slice(32));
+
+        selectablePokemons.forEach((img, idx) => {
             const pieces = inventory[img] || 0;
             const isFull = pieces >= 4;
+            const isNew = recentBatch.has(img);
 
             const div = document.createElement('div');
-            div.className = `glass-panel rounded-2xl p-4 text-center cursor-pointer transition transform hover:scale-105 border-4 border-transparent ${isFull ? 'opacity-50' : ''}`;
+            div.className = `glass-panel rounded-2xl p-4 text-center cursor-pointer transition transform hover:scale-105 border-4 border-transparent relative ${isFull ? 'opacity-50' : ''}`;
             
+            if (isNew) {
+                const newBadge = document.createElement('span');
+                newBadge.className = 'absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10 animate-pulse';
+                newBadge.textContent = 'NEW';
+                div.appendChild(newBadge);
+            }
+
             // Generate 2x2 preview
             const previewCanvas = document.createElement('div');
             previewCanvas.className = "w-full aspect-square grid grid-cols-2 grid-rows-2 gap-1 bg-gray-200 mb-2 rounded overflow-hidden";
@@ -797,13 +821,24 @@ const UI = {
             return;
         }
 
-        POKEMON_IMAGES.forEach(img => {
+        const recentBatch = new Set(POKEMON_IMAGES.slice(32));
+        let shuffledImages = [...POKEMON_IMAGES].sort(() => Math.random() - 0.5);
+
+        shuffledImages.forEach(img => {
             const pieces = inventory[img] || 0;
             const isFull = pieces >= 4;
+            const isNew = recentBatch.has(img);
 
             const div = document.createElement('div');
-            div.className = `glass-panel rounded-xl p-2 text-center flex flex-col items-center justify-center transform transition hover:scale-105`;
+            div.className = `glass-panel rounded-xl p-2 text-center flex flex-col items-center justify-center transform transition hover:scale-105 relative`;
             
+            if (isNew) {
+                const newBadge = document.createElement('span');
+                newBadge.className = 'absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-lg z-10 animate-pulse';
+                newBadge.textContent = 'NEW';
+                div.appendChild(newBadge);
+            }
+
             // Generate 2x2 preview
             const previewCanvas = document.createElement('div');
             previewCanvas.className = "w-full aspect-square grid grid-cols-2 grid-rows-2 gap-[1px] bg-gray-200 rounded overflow-hidden";
