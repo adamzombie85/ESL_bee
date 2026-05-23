@@ -54,7 +54,7 @@ const PvP = {
     },
 
     init() {
-        this.username = window.App?.currentUser?.username || "Player_" + Math.floor(Math.random()*1000);
+        this.username = Auth?.currentUser?.username || "Player_" + Math.floor(Math.random()*1000);
         
         // Bind UI buttons
         document.getElementById('open-pvp-lobby-btn')?.addEventListener('click', () => this.openLobby());
@@ -147,7 +147,7 @@ const PvP = {
                 this.sendLobbyMessage("LOBBY_JOIN", { playerId: this.playerId, username: this.username });
             } else {
                 // Join battle room
-                const vocabDb = window.App?.currentUser?.progress?.currentLevelId || 'default';
+                const vocabDb = Auth?.currentUser?.selectedBank || 'default';
                 this.ws.send(JSON.stringify({
                     type: "JOIN_ROOM",
                     payload: {
@@ -351,7 +351,7 @@ const PvP = {
     },
 
     openPokemonSelector(slot) {
-        const inventory = window.Auth?.currentUser?.stats?.pokemon_inventory || {};
+        const inventory = Auth?.currentUser?.stats?.pokemon_inventory || {};
         const completedPokemons = Object.keys(inventory).filter(img => inventory[img] >= 4);
         
         if (completedPokemons.length === 0) {
@@ -533,8 +533,7 @@ const PvP = {
         const validWords = [];
         const db = typeof WORD_BANKS !== 'undefined' ? WORD_BANKS : {};
         
-        // 取得玩家專屬詞庫
-        const selectedBank = window.Auth?.currentUser?.selectedBank || "G3";
+        const selectedBank = Auth?.currentUser?.selectedBank || "G3";
         const levelData = db[selectedBank] || {};
         
         Object.keys(levelData).forEach(lenStr => {
