@@ -166,6 +166,7 @@ const BattleCenter = {
         // Start battle music
         const battleMusic = document.getElementById('battle-bg-music');
         if (battleMusic) {
+            battleMusic.volume = 0.5;
             battleMusic.currentTime = 0;
             battleMusic.play().catch(e => console.warn("Battle music blocked:", e));
         }

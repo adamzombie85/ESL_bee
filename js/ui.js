@@ -163,6 +163,7 @@ const UI = {
         }
 
         document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
             if (document.getElementById('view-game').classList.contains('hidden')) return;
             if (e.key === 'Enter') {
                 this.submitWord();
