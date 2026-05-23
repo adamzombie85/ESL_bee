@@ -475,6 +475,15 @@ const PvP = {
         // Disable main UI background scroll
         document.body.style.overflow = 'hidden';
         
+        // Start battle music
+        if (typeof Music !== 'undefined') Music.pause();
+        const battleMusic = document.getElementById('battle-bg-music');
+        if (battleMusic) {
+            battleMusic.volume = 0.3;
+            battleMusic.currentTime = 0;
+            battleMusic.play().catch(e => console.warn("PvP battle music blocked:", e));
+        }
+
         // Fix Canvas 0x0 bug: Resize after view is flex
         this.canvasEngine.resize();
         this.canvasEngine.start();
@@ -655,6 +664,13 @@ const PvP = {
             this.showFeedback("遊戲結束", payload.winner === this.playerId ? "你贏了！🎉" : (payload.winner === 'draw' ? "平手！" : "你輸了..."));
             this.logToConsole(`\n【戰鬥結束】`, 'system');
             this.logToConsole(payload.winner === this.playerId ? "恭喜你獲得了勝利！🎉" : "很可惜，你戰敗了...", 'crit');
+            
+            const battleMusic = document.getElementById('battle-bg-music');
+            if (battleMusic) {
+                battleMusic.pause();
+            }
+            if (typeof Music !== 'undefined') Music.play();
+
             setTimeout(() => {
                 window.location.reload(); // Simple reset for now
             }, 5000);
