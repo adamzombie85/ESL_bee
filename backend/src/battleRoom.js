@@ -279,10 +279,15 @@ export class BattleRoom {
 
     this.gameState.currentWords = {}; 
     this.gameState.roundEndTime = Date.now() + 15000;
+    this.gameState.roundEvaluated = false;
+
+    if (this.gameState.roundTimeout) {
+        clearTimeout(this.gameState.roundTimeout);
+    }
 
     // Timeout for the round (15s)
-    setTimeout(() => {
-        if (this.gameState.round === R && !this.gameState.isGameOver) {
+    this.gameState.roundTimeout = setTimeout(() => {
+        if (this.gameState.round === R && !this.gameState.isGameOver && !this.gameState.roundEvaluated) {
             // 超時未作答，視為答錯
             this.evaluateRound(false, 15000);
         }
@@ -298,7 +303,8 @@ export class BattleRoom {
   }
 
   evaluateRound(isCorrect, timeTaken) {
-    if (this.gameState.isGameOver) return;
+    if (this.gameState.isGameOver || this.gameState.roundEvaluated) return;
+    this.gameState.roundEvaluated = true;
     
     const activePlayerId = this.gameState.currentTurn;
     const playerIds = Object.keys(this.gameState.players);
