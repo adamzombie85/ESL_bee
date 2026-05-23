@@ -162,7 +162,12 @@
 
                 <!-- 3. Accuracy Chart -->
                 <div class="glass-panel rounded-3xl p-6 flex flex-col">
-                    <h3 class="text-2xl font-fredoka mb-4 flex items-center gap-2">📈 易錯詞彙</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-fredoka flex items-center gap-2">📈 易錯詞彙</h3>
+                        <button id="open-mistakes-modal-btn" class="bg-bee-yellow text-bee-dark px-3 py-1 rounded-xl font-bold shadow hover:bg-honey transition text-sm">
+                            完整統計表
+                        </button>
+                    </div>
                     <div class="flex-1 flex flex-col justify-center">
                         <div class="h-64 w-full">
                             <canvas id="accuracyChart"></canvas>
@@ -498,6 +503,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- View 10: Mistakes Modal -->
+        <div id="view-mistakes-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+            <div class="glass-panel max-w-2xl w-full p-8 rounded-3xl shadow-2xl flex flex-col items-center relative transform scale-95 transition-transform duration-300 max-h-[90vh]">
+                <button id="close-mistakes-modal-btn" class="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl transition">&times;</button>
+                
+                <h2 class="text-3xl font-fredoka text-bee-yellow mb-6">易錯詞彙完整統計</h2>
+                
+                <div class="w-full flex-1 overflow-y-auto custom-scrollbar pr-2">
+                    <table class="w-full text-left border-collapse text-white">
+                        <thead class="bg-black/40 text-bee-yellow font-bold sticky top-0">
+                            <tr>
+                                <th class="p-3 border-b border-bee-yellow/50">易錯詞彙</th>
+                                <th class="p-3 border-b border-bee-yellow/50 text-center">字母數</th>
+                                <th class="p-3 border-b border-bee-yellow/50 text-center">累積錯誤次數</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mistakes-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button id="mistakes-modal-close-btn" class="mt-8 bg-bee-yellow text-bee-dark px-10 py-3 rounded-xl font-bold hover:bg-honey transition transform active:scale-95">
+                    關閉
+                </button>
+            </div>
+        </div>
+
 
         <!-- View 8: PvP Battle UI (Canvas) -->
         <div id="pvp-battle-view" class="fixed inset-0 bg-black hidden z-[90] flex-col md:flex-row">

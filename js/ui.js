@@ -210,6 +210,17 @@ const UI = {
 
         // Battle Center
         BattleCenter.init();
+
+        // Mistakes Modal
+        document.getElementById('open-mistakes-modal-btn').addEventListener('click', () => {
+            this.showMistakesModal();
+        });
+        document.getElementById('close-mistakes-modal-btn').addEventListener('click', () => {
+            this.hideMistakesModal();
+        });
+        document.getElementById('mistakes-modal-close-btn').addEventListener('click', () => {
+            this.hideMistakesModal();
+        });
     },
 
     populateVoices() {
@@ -585,6 +596,47 @@ const UI = {
 
     hideGalleryDetail() {
         const modal = document.getElementById('view-gallery-modal');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    },
+
+    showMistakesModal() {
+        const modal = document.getElementById('view-mistakes-modal');
+        const tbody = document.getElementById('mistakes-table-body');
+        tbody.innerHTML = '';
+        
+        if (Auth.currentUser && Auth.currentUser.stats.word_mastery) {
+            const mastery = Auth.currentUser.stats.word_mastery;
+            const words = Object.keys(mastery);
+            
+            const errorCounts = words.map(w => ({ word: w, errors: mastery[w].errors || 0, length: w.length }))
+                                     .filter(w => w.errors > 0)
+                                     .sort((a, b) => b.errors - a.errors);
+            
+            if (errorCounts.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="3" class="p-4 text-center text-gray-400">目前沒有易錯詞彙！繼續保持！</td>`;
+                tbody.appendChild(tr);
+            } else {
+                errorCounts.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-white/10 transition border-b border-bee-yellow/20 last:border-0";
+                    tr.innerHTML = `
+                        <td class="p-3 font-bold">${item.word}</td>
+                        <td class="p-3 text-center">${item.length}</td>
+                        <td class="p-3 text-center text-red-400 font-bold">${item.errors}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    },
+
+    hideMistakesModal() {
+        const modal = document.getElementById('view-mistakes-modal');
         modal.classList.add('opacity-0');
         setTimeout(() => modal.classList.add('hidden'), 300);
     },
