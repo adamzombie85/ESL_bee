@@ -32,7 +32,27 @@ const POKEMON_IMAGES = [
     "e724713a13271ef531f5410da782e24f729cb6d6.png",
     "eda09f7ae6a3f5c71eeb1613b2da7b769cf12ae6.png",
     "f792fb3e98937419d426f9d8de19b8f1eebc7454.png",
-    "fea142043a53539815b5a08756a010348931350a.png"
+    "fea142043a53539815b5a08756a010348931350a.png",
+    "00f9b6fc77b07974b842263e7077e8381edaec55.png",
+    "017202e97b6ba5eabc742df1d6c0ff9d4e1d79ca.png",
+    "02f7f5bcb17cb72e8b5b9009b1489f750834707f.png",
+    "2a31d27aa670d58868f9fc3934623e3115713f00.png",
+    "44708bc0531c717525ca3fc2bc92baf00c59de75.png",
+    "53b743e93280fd3993d12bc4dbcce5e43e9402e6.png",
+    "5903561fb10a3c625a06c2e01d44faff8946d398.png",
+    "72bee8e3be7ff19e143a61281b1b753e4b1c6cfb.png",
+    "7612d8c931099a7233b4b12b812b381f45a5c936.png",
+    "772f49f099aecc8980511f6c1eacb3d2447ae7c6.png",
+    "9aaab70c23e037ee7728a43ea1cfabefa65b0c0f.png",
+    "a797782c9295522a9642e6682f279cc373921a3d.png",
+    "aae700aa7bb29fae4a30b77c495b0b66406d74d6.png",
+    "ace94f428f74aaa5381f18a67b875512307685ff.png",
+    "c30c65d8d05093a751d4ddbeaf2bf995b1dbffc0.png",
+    "c8ca1d916272be90a24dd4da66a27e3ae70d8fd5.png",
+    "d30e6f3f6bf49eb279d644ee7aaaaee450f69d9d.png",
+    "eea9b5dae0506e7a00642125391b398a5c7471d8.png",
+    "f6ae3010972469372d493e3cc4a516c574df3974.png",
+    "fc5b91d5ab9164d29ed8e39dc042894dcdb8f557.png"
 ];
 
 const POKEMON_NAMES = {
@@ -66,8 +86,28 @@ const POKEMON_NAMES = {
     "e12ce48ab99b2df6fbbc1e97038c4f6e192d09d7.png": "夢幻",
     "e724713a13271ef531f5410da782e24f729cb6d6.png": "洛奇亞",
     "eda09f7ae6a3f5c71eeb1613b2da7b769cf12ae6.png": "鳳王",
-    "f792fb3e98937419d426f9d8de19b8f1eebc7454.png": "烈空坐",
-    "fea142043a53539815b5a08756a010348931350a.png": "固拉多"
+    "f792fb3e98937419d426f9d8de19b8f1eebc7454.png": "急凍鳥(伽勒爾的樣子)",
+    "fea142043a53539815b5a08756a010348931350a.png": "美納斯",
+    "00f9b6fc77b07974b842263e7077e8381edaec55.png": "鳳王",
+    "017202e97b6ba5eabc742df1d6c0ff9d4e1d79ca.png": "超夢",
+    "02f7f5bcb17cb72e8b5b9009b1489f750834707f.png": "炎兔兒",
+    "2a31d27aa670d58868f9fc3934623e3115713f00.png": "仙子伊布",
+    "44708bc0531c717525ca3fc2bc92baf00c59de75.png": "厄月椪",
+    "53b743e93280fd3993d12bc4dbcce5e43e9402e6.png": "謎擬Q",
+    "5903561fb10a3c625a06c2e01d44faff8946d398.png": "火稚雞",
+    "72bee8e3be7ff19e143a61281b1b753e4b1c6cfb.png": "七夕青鳥",
+    "7612d8c931099a7233b4b12b812b381f45a5c936.png": "偷兒狐",
+    "772f49f099aecc8980511f6c1eacb3d2447ae7c6.png": "多龍梅西亞",
+    "9aaab70c23e037ee7728a43ea1cfabefa65b0c0f.png": "冰雪巨龍",
+    "a797782c9295522a9642e6682f279cc373921a3d.png": "雷吉艾斯",
+    "aae700aa7bb29fae4a30b77c495b0b66406d74d6.png": "利歐路",
+    "ace94f428f74aaa5381f18a67b875512307685ff.png": "夢歌仙人掌",
+    "c30c65d8d05093a751d4ddbeaf2bf995b1dbffc0.png": "四顎針龍",
+    "c8ca1d916272be90a24dd4da66a27e3ae70d8fd5.png": "閃電鳥(伽勒爾的樣子)",
+    "d30e6f3f6bf49eb279d644ee7aaaaee450f69d9d.png": "呱頭蛙",
+    "eea9b5dae0506e7a00642125391b398a5c7471d8.png": "打擊鬼",
+    "f6ae3010972469372d493e3cc4a516c574df3974.png": "哈克龍",
+    "fc5b91d5ab9164d29ed8e39dc042894dcdb8f557.png": "狩獵鳳蝶"
 };
 
 const UI = {

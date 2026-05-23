@@ -1,0 +1,8 @@
+# IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Secret config files
+js/firebase-config.js
+js/gas-config.js

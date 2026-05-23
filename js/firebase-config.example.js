@@ -1,13 +1,14 @@
-// firebase-config.js
+// firebase-config.example.js
+// Rename this file to firebase-config.js and fill in your actual Firebase configuration
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY_HERE",
-    authDomain: "pingkipquiz.firebaseapp.com",
-    projectId: "pingkipquiz",
-    storageBucket: "pingkipquiz.firebasestorage.app",
-    messagingSenderId: "838722993256",
-    appId: "1:838722993256:web:8ff2dfe06c37fdc6248fdd",
-    measurementId: "G-K6M8PC6951",
-    databaseURL: "https://pingkipquiz-default-rtdb.firebaseio.com"
+    authDomain: "YOUR_AUTH_DOMAIN_HERE",
+    projectId: "YOUR_PROJECT_ID_HERE",
+    storageBucket: "YOUR_STORAGE_BUCKET_HERE",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
+    appId: "YOUR_APP_ID_HERE",
+    measurementId: "YOUR_MEASUREMENT_ID_HERE",
+    databaseURL: "YOUR_DATABASE_URL_HERE"
 };
 
 let db = null;
